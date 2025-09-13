@@ -3,6 +3,17 @@ import BlogCard, { BlogPost } from './BlogCard';
 // Mock data - in a real app, this would come from a database or CMS
 const featuredPosts: BlogPost[] = [
   {
+    slug: 'aws-lambda-console-ide-remote-debugging',
+    title: 'Accelerating Local Serverless Development with Console-to-IDE and Remote Debugging for AWS Lambda',
+    excerpt: 'AWS has introduced a game-changer: Console-to-IDE integration with Remote Debugging for AWS Lambda. Learn how to debug Lambda functions in real-time with breakpoints, variable inspection, and local test events.',
+    content: '',
+    date: '2025-09-12',
+    author: 'DevBlog',
+    tags: ['AWS', 'Lambda', 'Serverless', 'Debugging', 'IDE', 'Development'],
+    readTime: '6 min read',
+    featured: true,
+  },
+  {
     slug: 'aws-lambda-best-practices',
     title: 'AWS Lambda Best Practices: Building Serverless Applications',
     excerpt: 'Learn the essential best practices for building efficient, scalable, and maintainable serverless applications with AWS Lambda. From cold start optimization to error handling.',
