@@ -73,7 +73,7 @@ export default function BlogPost() {
 
           <h3 style={{ color: '#8c5b08' }}>Local Development with Cloud Context</h3>
           <p>
-            By syncing your Lambda's configuration (environment variables, IAM role permissions, runtime settings) with your local environment, you can replicate production conditions more accurately.
+            By syncing your Lambda&apos;s configuration (environment variables, IAM role permissions, runtime settings) with your local environment, you can replicate production conditions more accurately.
           </p>
 
           <h2 style={{ color: '#8c5b08' }}>Getting Started</h2>
@@ -88,7 +88,7 @@ export default function BlogPost() {
           <h3 style={{ color: '#8c5b08' }}>Step 1: Open Function from Console</h3>
           <ol>
             <li>Navigate to your Lambda function in the AWS Console.</li>
-            <li>Click <strong>"Open in IDE"</strong>.</li>
+            <li>Click <strong>&quot;Open in IDE&quot;</strong>.</li>
             <li>Your IDE will prompt to open the project, installing dependencies and creating a launch configuration.</li>
           </ol>
 
@@ -115,7 +115,7 @@ export default function BlogPost() {
                 {"      "}<span className="text-purple-400">Runtime</span>: <span className="text-green-400">nodejs18.x</span><br/>
                 {"      "}<span className="text-purple-400">Environment</span>:<br/>
                 {"        "}<span className="text-purple-400">Variables</span>:<br/>
-                {"          "}<span className="text-purple-400">NODE_OPTIONS</span>: <span className="text-green-400">"--inspect=0.0.0.0:9229"</span>
+                {"          "}<span className="text-purple-400">NODE_OPTIONS</span>: <span className="text-green-400">&quot;--inspect=0.0.0.0:9229&quot;</span>
               </code>
             </pre>
           </div>
@@ -158,7 +158,7 @@ export default function BlogPost() {
 
           <h2 style={{ color: '#8c5b08' }}>Final Thoughts</h2>
           <p>
-            This update significantly improves the developer experience for serverless builders. Whether you're building microservices, event-driven apps, or data pipelines, remote debugging will save hours of log-checking and redeploying.
+            This update significantly improves the developer experience for serverless builders. Whether you&apos;re building microservices, event-driven apps, or data pipelines, remote debugging will save hours of log-checking and redeploying.
           </p>
 
           <p>
@@ -174,7 +174,7 @@ export default function BlogPost() {
 
           <div className="mt-12 p-6 bg-secondary-50 dark:bg-secondary-800 rounded-lg">
             <p className="text-secondary-700 dark:text-secondary-200 italic mb-0">
-              Have you tried the new Console-to-IDE integration? Share your experience and any tips you've discovered in the comments below!
+              Have you tried the new Console-to-IDE integration? Share your experience and any tips you&apos;ve discovered in the comments below!
             </p>
           </div>
         </div>
