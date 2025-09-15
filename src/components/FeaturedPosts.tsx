@@ -1,6 +1,6 @@
 import BlogCard, { BlogPost } from './BlogCard';
 
-// Mock data - in a real app, this would come from a database or CMS
+// Real featured posts with valuable AWS and software engineering content
 const featuredPosts: BlogPost[] = [
   {
     slug: 'aws-lambda-console-ide-remote-debugging',
@@ -16,18 +16,40 @@ const featuredPosts: BlogPost[] = [
   {
     slug: 'aws-lambda-best-practices',
     title: 'AWS Lambda Best Practices: Building Serverless Applications',
-    excerpt: 'Learn the essential best practices for building efficient, scalable, and maintainable serverless applications with AWS Lambda. From cold start optimization to error handling.',
+    excerpt: 'Learn the essential best practices for building efficient, scalable, and maintainable serverless applications with AWS Lambda. From cold start optimization to error handling and security.',
     content: '',
-    date: '2025-01-10',
+    date: '2025-09-14',
     author: 'DevBlog',
-    tags: ['AWS', 'Lambda', 'Serverless', 'Best Practices'],
+    tags: ['AWS', 'Lambda', 'Serverless', 'Best Practices', 'Performance'],
     readTime: '8 min read',
+    featured: true,
+  },
+  {
+    slug: 'aws-infrastructure-as-code',
+    title: 'Infrastructure as Code with AWS CDK: A Complete Guide',
+    excerpt: 'Discover how to manage your AWS infrastructure using the AWS CDK and TypeScript for better maintainability, version control, and type safety in your infrastructure code.',
+    content: '',
+    date: '2025-09-14',
+    author: 'DevBlog',
+    tags: ['AWS', 'CDK', 'Infrastructure', 'TypeScript', 'DevOps'],
+    readTime: '10 min read',
+    featured: true,
+  },
+  {
+    slug: 'aws-api-gateway-patterns',
+    title: 'AWS API Gateway Patterns and Best Practices',
+    excerpt: 'Learn how to design robust APIs using AWS API Gateway with proper authentication, rate limiting, monitoring, and advanced patterns for production-ready applications.',
+    content: '',
+    date: '2025-09-14',
+    author: 'DevBlog',
+    tags: ['AWS', 'API Gateway', 'REST', 'Serverless', 'Architecture'],
+    readTime: '11 min read',
     featured: true,
   },
   {
     slug: 'typescript-advanced-patterns',
     title: 'Advanced TypeScript Patterns for Better Code',
-    excerpt: 'Explore advanced TypeScript patterns and techniques that will help you write more maintainable and type-safe applications.',
+    excerpt: 'Explore advanced TypeScript patterns and techniques that will help you write more maintainable and type-safe applications with real-world examples.',
     content: '',
     date: '2025-01-08',
     author: 'DevBlog',
@@ -35,49 +57,19 @@ const featuredPosts: BlogPost[] = [
     readTime: '12 min read',
   },
   {
-    slug: 'aws-infrastructure-as-code',
-    title: 'Infrastructure as Code with AWS CDK',
-    excerpt: 'Discover how to manage your AWS infrastructure using the AWS CDK and TypeScript for better maintainability and version control.',
-    content: '',
-    date: '2025-01-05',
-    author: 'DevBlog',
-    tags: ['AWS', 'CDK', 'Infrastructure', 'TypeScript'],
-    readTime: '10 min read',
-  },
-  {
     slug: 'react-performance-optimization',
     title: 'React Performance Optimization Techniques',
-    excerpt: 'Learn proven techniques to optimize your React applications for better performance and user experience.',
+    excerpt: 'Learn proven techniques to optimize your React applications for better performance and user experience including memoization, code splitting, and more.',
     content: '',
     date: '2025-01-03',
     author: 'DevBlog',
     tags: ['React', 'Performance', 'Optimization'],
     readTime: '15 min read',
   },
-  {
-    slug: 'microservices-architecture-aws',
-    title: 'Building Microservices Architecture on AWS',
-    excerpt: 'A comprehensive guide to designing and implementing microservices architecture using AWS services like ECS, API Gateway, and RDS.',
-    content: '',
-    date: '2025-01-01',
-    author: 'DevBlog',
-    tags: ['AWS', 'Microservices', 'Architecture', 'ECS'],
-    readTime: '18 min read',
-  },
-  {
-    slug: 'nextjs-13-app-directory',
-    title: 'Getting Started with Next.js 13 App Directory',
-    excerpt: 'Explore the new app directory structure in Next.js 13 and how it improves developer experience and application performance.',
-    content: '',
-    date: '2024-12-28',
-    author: 'DevBlog',
-    tags: ['Next.js', 'React', 'Web Development'],
-    readTime: '7 min read',
-  },
 ];
 
 interface FeaturedPostsProps {
-  limit?: number;
+  readonly limit?: number;
 }
 
 export default function FeaturedPosts({ limit = 6 }: FeaturedPostsProps) {
