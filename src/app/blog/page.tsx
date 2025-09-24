@@ -9,6 +9,17 @@ export const metadata: Metadata = {
 // Real blog posts with valuable AWS and software engineering content
 const allPosts: BlogPost[] = [
   {
+    slug: 'localstack-vs-code-integration',
+    title: 'LocalStack VS Code Integration: Revolutionary Local AWS Development',
+    excerpt: 'AWS launches game-changing LocalStack integration in VS Code IDE, enabling seamless local testing and debugging of serverless applications without leaving your favorite editor.',
+    content: '',
+    date: '2025-09-23',
+    author: 'AWS Blog Team',
+    tags: ['AWS', 'LocalStack', 'VS Code', 'Local Development', 'Serverless', 'IDE'],
+    readTime: '12 min read',
+    featured: true,
+  },
+  {
     slug: 'aws-lambda-console-ide-remote-debugging',
     title: 'Accelerating Local Serverless Development with Console-to-IDE and Remote Debugging for AWS Lambda',
     excerpt: 'AWS has introduced a game-changer: Console-to-IDE integration with Remote Debugging for AWS Lambda. Learn how to debug Lambda functions in real-time with breakpoints, variable inspection, and local test events.',

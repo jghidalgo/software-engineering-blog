@@ -1,13 +1,17 @@
-# DevBlog - Professional Software Engineering Blog
+# AWS Blog - Next.js 15 Blog with Free Backend
 
-A modern, responsive blog built with Next.js, TypeScript, and Tailwind CSS, focusing on software engineering and AWS cloud technologies.
+A modern, fully-featured blog focused on AWS content with a completely free backend solution.
 
 ## 🚀 Features
 
-- **Modern Design**: Clean, professional interface with dark mode support
-- **Responsive**: Works perfectly on desktop, tablet, and mobile devices
-- **Performance Optimized**: Built with Next.js 15 and Turbopack for lightning-fast development
-- **TypeScript**: Fully typed for better development experience
+- **Modern Stack**: Next.js 15 with App Router, TypeScript, Tailwind CSS
+- **Free Backend**: Airtable + EmailJS + Vercel serverless functions
+- **Contact Form**: With validation, loading states, and email notifications
+- **Newsletter**: Subscription system with duplicate detection
+- **Real Content**: Comprehensive AWS tutorials and guides
+- **Responsive**: Mobile-first design with dark mode support
+- **SEO Optimized**: Meta tags, structured data, sitemap
+- **No Cost**: Completely free hosting and backend services
 - **Tailwind CSS**: Utility-first CSS framework for rapid UI development
 - **Professional Color Palette**: Carefully selected colors for readability and aesthetics
 - **Component-Based**: Modular, reusable components
