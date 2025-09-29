@@ -99,20 +99,22 @@ export default function AboutPage() {
 
           <div className="grid grid-cols-1 gap-8 sm:grid-cols-2 lg:grid-cols-4">
             {skills.map((skill) => (
-              <div key={skill.category} className="bg-white dark:bg-secondary-800 rounded-lg p-6 shadow-sm border border-secondary-200 dark:border-secondary-700">
-                <div className="flex items-center mb-4">
-                  <skill.icon className="h-6 w-6 text-primary-600 dark:text-primary-400 mr-3" />
-                  <h3 className="text-lg font-semibold text-secondary-900 dark:text-white">
-                    {skill.category}
-                  </h3>
+              <div key={skill.category} className="bg-secondary-50 dark:bg-secondary-800 rounded-lg p-6 shadow-sm border-2  bg-gradient-to-r from-primary-500 to-primary-700 bg-clip-border relative">
+                <div className="bg-secondary-50 dark:bg-secondary-800 rounded-md p-6 -m-6 h-full relative">
+                  <div className="flex items-center mb-4">
+                    <skill.icon className="h-6 w-6 text-primary-600 dark:text-primary-400 mr-3" />
+                    <h3 className="text-lg font-semibold text-secondary-900 dark:text-white">
+                      {skill.category}
+                    </h3>
+                  </div>
+                  <ul className="space-y-2">
+                    {skill.technologies.map((tech) => (
+                      <li key={tech} className="text-sm text-secondary-600 dark:text-secondary-300">
+                        {tech}
+                      </li>
+                    ))}
+                  </ul>
                 </div>
-                <ul className="space-y-2">
-                  {skill.technologies.map((tech) => (
-                    <li key={tech} className="text-sm text-secondary-600 dark:text-secondary-300">
-                      {tech}
-                    </li>
-                  ))}
-                </ul>
               </div>
             ))}
           </div>
