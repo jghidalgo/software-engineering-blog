@@ -1,5 +1,5 @@
 import Link from 'next/link';
-import { CloudIcon } from '@heroicons/react/24/solid';
+import Image from 'next/image';
 
 interface IconProps {
   className?: string;
@@ -77,11 +77,14 @@ export default function Footer() {
         <div className="grid gap-10 md:grid-cols-12">
           {/* Brand */}
           <div className="md:col-span-5">
-            <Link href="/" className="inline-flex items-center gap-2.5">
-              <div className="relative flex h-10 w-10 items-center justify-center rounded-xl bg-gradient-to-br from-primary-600 to-primary-800 shadow-glow ring-1 ring-white/10">
-                <CloudIcon className="h-5 w-5 text-white" />
-                <span className="absolute -bottom-0.5 -right-0.5 h-2.5 w-2.5 rounded-full bg-aws-smile ring-2 ring-[#0b1220]" />
-              </div>
+            <Link href="/" className="group inline-flex items-center gap-2.5">
+              <Image
+                src="/Logo.png"
+                alt="AWSMindset"
+                width={48}
+                height={48}
+                className="h-10 w-10 object-contain transition-transform duration-300 group-hover:rotate-3 group-hover:scale-105"
+              />
               <span className="text-lg font-semibold tracking-tight text-white">
                 AWS<span className="text-gradient">Mindset</span>
               </span>

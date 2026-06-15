@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from 'react';
 import Link from 'next/link';
+import Image from 'next/image';
 import { usePathname } from 'next/navigation';
 import { Bars3Icon, XMarkIcon } from '@heroicons/react/24/outline';
 import { CloudIcon, BookOpenIcon, CodeBracketIcon } from '@heroicons/react/24/solid';
@@ -38,10 +39,14 @@ export default function Header() {
         <div className="flex h-16 items-center justify-between">
           {/* Logo */}
           <Link href="/" className="group flex items-center gap-2.5">
-            <div className="relative flex h-9 w-9 items-center justify-center rounded-xl bg-gradient-to-br from-primary-600 to-primary-800 shadow-glow ring-1 ring-white/10">
-              <CloudIcon className="h-5 w-5 text-white" />
-              <span className="absolute -bottom-0.5 -right-0.5 h-2.5 w-2.5 rounded-full bg-aws-smile ring-2 ring-white dark:ring-[#060a14] animate-pulse" />
-            </div>
+            <Image
+              src="/Logo.png"
+              alt="AWSMindset"
+              width={40}
+              height={40}
+              priority
+              className="h-9 w-9 object-contain transition-transform duration-300 group-hover:rotate-3 group-hover:scale-105"
+            />
             <div className="flex flex-col leading-tight">
               <span className="text-base font-semibold tracking-tight text-secondary-900 dark:text-white">
                 AWS<span className="text-gradient">Mindset</span>
@@ -112,9 +117,13 @@ export default function Header() {
           <div className="fixed right-0 top-0 h-full w-full max-w-xs glass-strong p-6 shadow-2xl">
             <div className="flex items-center justify-between">
               <Link href="/" className="flex items-center gap-2" onClick={() => setMobileMenuOpen(false)}>
-                <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-gradient-to-br from-primary-600 to-primary-800 shadow-glow">
-                  <CloudIcon className="h-5 w-5 text-white" />
-                </div>
+                <Image
+                  src="/Logo.png"
+                  alt="AWSMindset"
+                  width={40}
+                  height={40}
+                  className="h-9 w-9 object-contain"
+                />
                 <span className="text-base font-semibold text-secondary-900 dark:text-white">
                   AWS<span className="text-gradient">Mindset</span>
                 </span>
