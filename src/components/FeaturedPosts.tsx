@@ -90,7 +90,7 @@ export default function FeaturedPosts({ limit = 6 }: FeaturedPostsProps) {
     <section className="relative py-24 sm:py-28">
       <div className="absolute inset-x-0 top-0 -z-10 h-64 bg-gradient-to-b from-secondary-100/60 to-transparent dark:from-white/[0.02]" />
       <div className="mx-auto max-w-7xl px-6 lg:px-8">
-        <Reveal as="div" className="mx-auto mb-14 flex max-w-3xl flex-col items-center text-center">
+        <Reveal className="mx-auto mb-14 flex max-w-3xl flex-col items-center text-center">
           <span className="inline-flex items-center gap-2 rounded-full border border-secondary-200/70 dark:border-white/10 bg-white/60 dark:bg-white/[0.04] px-3 py-1 text-xs font-medium text-secondary-700 dark:text-secondary-300 backdrop-blur">
             <span className="h-1.5 w-1.5 rounded-full bg-primary-500" />
             Featured this week
