@@ -1,7 +1,9 @@
 import Link from 'next/link';
-import { CalendarIcon, ClockIcon, UserIcon } from '@heroicons/react/24/outline';
+import { CalendarIcon, ClockIcon, UserIcon, ArrowRightIcon } from '@heroicons/react/24/outline';
 import { format } from 'date-fns';
 import Badge from './ui/Badge';
+import Spotlight from './Spotlight';
+import { gradientFromSlug } from '@/lib/gradientFromSlug';
 
 export interface BlogPost {
   slug: string;
@@ -18,45 +20,107 @@ export interface BlogPost {
 interface BlogCardProps {
   post: BlogPost;
   featured?: boolean;
+  /** Visual size variant for bento layouts. */
+  variant?: 'hero' | 'standard';
 }
 
-export default function BlogCard({ post, featured = false }: BlogCardProps) {
+export default function BlogCard({
+  post,
+  featured = false,
+  variant = 'standard',
+}: BlogCardProps) {
   const postDate = new Date(post.date);
+  const isAWS = post.tags.some((t) => t.toLowerCase() === 'aws');
+  const grad = gradientFromSlug(post.slug);
+  const isHero = variant === 'hero';
 
   return (
-    <article className={`group relative bg-gradient-to-br from-primary-50 to-primary-100 dark:bg-gradient-to-br dark:from-primary-900/20 dark:to-primary-800/10 rounded-xl border border-primary-200 dark:border-primary-700/50 shadow-sm hover:shadow-md transition-all duration-200 overflow-hidden ${featured ? 'lg:col-span-2' : ''}`}>
-      <div className="p-6">
-        <div className="flex items-center gap-x-4 text-xs mb-4">
-          <div className="flex items-center gap-1 text-secondary-600 dark:text-secondary-300">
-            <CalendarIcon className="h-4 w-4" />
-            <time dateTime={post.date}>
-              {format(postDate, 'MMM dd, yyyy')}
-            </time>
-          </div>
-          <div className="flex items-center gap-1 text-secondary-600 dark:text-secondary-300">
-            <ClockIcon className="h-4 w-4" />
-            <span>{post.readTime}</span>
-          </div>
-          <div className="flex items-center gap-1 text-secondary-600 dark:text-secondary-300">
-            <UserIcon className="h-4 w-4" />
-            <span>{post.author}</span>
-          </div>
+    <Spotlight
+      className={`group relative flex h-full flex-col overflow-hidden rounded-2xl border border-secondary-200/60 dark:border-white/10 bg-white/70 dark:bg-white/[0.03] backdrop-blur-sm shadow-card transition-all duration-300 hover:-translate-y-1 hover:shadow-card-hover ${
+        featured ? 'lg:col-span-2' : ''
+      }`}
+    >
+      {/* Cover with abstract gradient */}
+      <div
+        className={`relative w-full overflow-hidden ${
+          isHero ? 'h-56 sm:h-64' : 'h-32'
+        }`}
+        style={{ background: grad.css }}
+      >
+        {/* Subtle grid + radial overlay */}
+        <div className="cover-pattern" />
+
+        {/* Floating glyph */}
+        <svg
+          className="absolute -right-6 -bottom-6 h-32 w-32 text-white/15"
+          viewBox="0 0 200 200"
+          fill="none"
+          aria-hidden="true"
+        >
+          <circle cx="100" cy="100" r="80" stroke="currentColor" strokeWidth="1.5" />
+          <circle cx="100" cy="100" r="50" stroke="currentColor" strokeWidth="1.5" />
+          <circle cx="100" cy="100" r="20" stroke="currentColor" strokeWidth="1.5" />
+          <path d="M20 100 L180 100" stroke="currentColor" strokeWidth="1" />
+          <path d="M100 20 L100 180" stroke="currentColor" strokeWidth="1" />
+        </svg>
+
+        {/* AWS chip on cover */}
+        {isAWS && (
+          <span className="absolute left-4 top-4 inline-flex items-center gap-1 rounded-full bg-black/30 px-2.5 py-1 text-[10px] font-semibold uppercase tracking-wider text-white backdrop-blur-sm ring-1 ring-white/20">
+            <span className="h-1.5 w-1.5 rounded-full bg-aws-smile" />
+            AWS
+          </span>
+        )}
+
+        {featured && (
+          <span className="absolute right-4 top-4 inline-flex items-center gap-1 rounded-full bg-aws-smile px-2.5 py-1 text-[10px] font-bold uppercase tracking-wider text-secondary-900 shadow-glow-amber">
+            <span className="h-1.5 w-1.5 rounded-full bg-white" />
+            Featured
+          </span>
+        )}
+
+        {/* Reading time pill on cover bottom */}
+        <span className="absolute bottom-3 left-3 inline-flex items-center gap-1 rounded-full bg-black/35 px-2 py-1 text-[10px] font-medium text-white backdrop-blur-sm ring-1 ring-white/15">
+          <ClockIcon className="h-3 w-3" />
+          {post.readTime}
+        </span>
+      </div>
+
+      {/* Card body */}
+      <div className="flex flex-1 flex-col p-6">
+        <div className="mb-3 flex items-center gap-x-3 text-xs text-secondary-500 dark:text-secondary-400">
+          <span className="inline-flex items-center gap-1">
+            <CalendarIcon className="h-3.5 w-3.5" />
+            <time dateTime={post.date}>{format(postDate, 'MMM dd, yyyy')}</time>
+          </span>
+          <span className="h-1 w-1 rounded-full bg-secondary-300 dark:bg-secondary-600" />
+          <span className="inline-flex items-center gap-1">
+            <UserIcon className="h-3.5 w-3.5" />
+            {post.author}
+          </span>
         </div>
 
-        <div className="group-hover:text-primary-600 dark:group-hover:text-primary-400 transition-colors duration-200">
-          <h3 className={`font-semibold leading-6 text-secondary-900 dark:text-white mb-3 ${featured ? 'text-xl' : 'text-lg'}`}>
-            <Link href={`/blog/${post.slug}`}>
-              <span className="absolute inset-0" />
-              {post.title}
-            </Link>
-          </h3>
-          <p className="text-sm leading-6 text-secondary-700 dark:text-secondary-200 mb-4 line-clamp-3">
-            {post.excerpt}
-          </p>
-        </div>
+        <h3
+          className={`font-semibold leading-snug text-secondary-900 dark:text-white transition-colors duration-200 group-hover:text-primary-700 dark:group-hover:text-primary-300 ${
+            isHero ? 'text-2xl sm:text-3xl' : 'text-lg'
+          }`}
+        >
+          <Link href={`/blog/${post.slug}`}>
+            <span className="absolute inset-0" aria-hidden="true" />
+            {post.title}
+          </Link>
+        </h3>
 
-        <div className="flex items-center justify-between">
-          <div className="flex flex-wrap gap-2">
+        <p
+          className={`mt-3 text-sm leading-relaxed text-secondary-600 dark:text-secondary-300 line-clamp-3 ${
+            isHero ? 'sm:text-base' : ''
+          }`}
+        >
+          {post.excerpt}
+        </p>
+
+        <div className="mt-auto flex items-end justify-between gap-4 pt-5">
+          <div className="flex flex-wrap gap-1.5">
             {post.tags.slice(0, 3).map((tag) => (
               <Badge key={tag} variant="primary" size="sm">
                 {tag}
@@ -64,27 +128,17 @@ export default function BlogCard({ post, featured = false }: BlogCardProps) {
             ))}
             {post.tags.length > 3 && (
               <Badge variant="default" size="sm">
-                +{post.tags.length - 3} more
+                +{post.tags.length - 3}
               </Badge>
             )}
           </div>
-          
-          <Link
-            href={`/blog/${post.slug}`}
-            className="text-sm font-medium text-primary-600 dark:text-primary-400 hover:text-primary-700 dark:hover:text-primary-300 transition-colors duration-200"
-          >
-            Read more →
-          </Link>
+
+          <span className="inline-flex shrink-0 items-center gap-1 text-sm font-semibold text-primary-700 dark:text-primary-300 group-hover:text-primary-800 dark:group-hover:text-primary-200">
+            Read
+            <ArrowRightIcon className="h-3.5 w-3.5 transition-transform duration-200 group-hover:translate-x-1" />
+          </span>
         </div>
       </div>
-
-      {featured && (
-        <div className="absolute top-4 right-4">
-          <Badge variant="warning" size="sm">
-            Featured
-          </Badge>
-        </div>
-      )}
-    </article>
+    </Spotlight>
   );
 }

@@ -3,6 +3,8 @@ import { Inter, JetBrains_Mono } from "next/font/google";
 import "./globals.css";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
+import ReadingProgress from "@/components/ReadingProgress";
+import { NO_FOUC_SCRIPT } from "@/lib/theme";
 import { Analytics } from '@vercel/analytics/next';
 
 const inter = Inter({
@@ -50,13 +52,20 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en" className="h-full">
-      <body className={`${inter.variable} ${jetBrainsMono.variable} antialiased h-full bg-white dark:bg-secondary-900 font-sans`}>
+    <html lang="en" className="h-full" suppressHydrationWarning>
+      <head>
+        <script
+          // Runs before paint to set the dark class — prevents flash of wrong theme.
+          dangerouslySetInnerHTML={{ __html: NO_FOUC_SCRIPT }}
+        />
+      </head>
+      <body className={`${inter.variable} ${jetBrainsMono.variable} antialiased h-full font-sans text-secondary-800 dark:text-secondary-200 bg-secondary-50 dark:bg-[#060a14]`}>
+        <ReadingProgress />
         <div className="flex flex-col min-h-full">
           <Header />
           <main className="flex-grow">
             {children}
-             <Analytics />
+            <Analytics />
           </main>
           <Footer />
         </div>

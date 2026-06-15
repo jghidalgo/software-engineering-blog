@@ -53,9 +53,9 @@ export default function BlogPost() {
             After working with Lambda for several years and helping teams optimize their serverless applications, I&apos;ve compiled the most impactful best practices that can make or break your Lambda functions.
           </p>
 
-          <h2 style={{ color: '#8c5b08' }}>1. Optimize Cold Start Performance</h2>
+          <h2 className="text-aws-smile font-semibold">1. Optimize Cold Start Performance</h2>
 
-          <h3 style={{ color: '#8c5b08' }}>Keep Your Dependencies Lean</h3>
+          <h3 className="text-aws-smile font-semibold">Keep Your Dependencies Lean</h3>
           <p>
             The size of your deployment package directly impacts cold start times. Minimize dependencies and only include what you actually need.
           </p>
@@ -81,7 +81,7 @@ const { DynamoDB } = require('@aws-sdk/client-dynamodb');`}
             </pre>
           </div>
 
-          <h3 style={{ color: '#8c5b08' }}>Initialize Connections Outside the Handler</h3>
+          <h3 className="text-aws-smile font-semibold">Initialize Connections Outside the Handler</h3>
           <p>
             Take advantage of Lambda&apos;s execution context reuse by initializing database connections, AWS clients, and other expensive operations outside your handler function.
           </p>
@@ -110,9 +110,9 @@ exports.handler = async (event) => {
             </pre>
           </div>
 
-          <h2 style={{ color: '#8c5b08' }}>2. Right-Size Your Function</h2>
+          <h2 className="text-aws-smile font-semibold">2. Right-Size Your Function</h2>
 
-          <h3 style={{ color: '#8c5b08' }}>Memory Configuration</h3>
+          <h3 className="text-aws-smile font-semibold">Memory Configuration</h3>
           <p>
             Memory allocation affects both CPU performance and cost. Use AWS Lambda Power Tuning to find the optimal memory setting for your workload.
           </p>
@@ -123,12 +123,12 @@ exports.handler = async (event) => {
             <li><strong>Sweet spot</strong>: Often between 512MB - 1024MB for most applications</li>
           </ul>
 
-          <h3 style={{ color: '#8c5b08' }}>Timeout Configuration</h3>
+          <h3 className="text-aws-smile font-semibold">Timeout Configuration</h3>
           <p>
             Set appropriate timeouts based on your function&apos;s expected execution time. Don&apos;t default to 15 minutes if your function should complete in seconds.
           </p>
 
-          <h2 style={{ color: '#8c5b08' }}>3. Implement Proper Error Handling</h2>
+          <h2 className="text-aws-smile font-semibold">3. Implement Proper Error Handling</h2>
 
           <div className="bg-gray-900 rounded-lg overflow-hidden shadow-lg mb-6">
             <div className="flex items-center justify-between bg-gray-800 px-4 py-2 border-b border-gray-700">
@@ -166,9 +166,9 @@ exports.handler = async (event) => {
             </pre>
           </div>
 
-          <h2 style={{ color: '#8c5b08' }}>4. Monitoring and Observability</h2>
+          <h2 className="text-aws-smile font-semibold">4. Monitoring and Observability</h2>
 
-          <h3 style={{ color: '#8c5b08' }}>Essential Metrics to Track</h3>
+          <h3 className="text-aws-smile font-semibold">Essential Metrics to Track</h3>
           <ul>
             <li><strong>Duration</strong>: Track execution time trends</li>
             <li><strong>Error Rate</strong>: Monitor function failures</li>
@@ -177,7 +177,7 @@ exports.handler = async (event) => {
             <li><strong>Dead Letter Queue Messages</strong>: Failed async invocations</li>
           </ul>
 
-          <h3 style={{ color: '#8c5b08' }}>Structured Logging</h3>
+          <h3 className="text-aws-smile font-semibold">Structured Logging</h3>
           <p>
             Use structured logging with JSON format for better searchability and analysis in CloudWatch Logs.
           </p>
@@ -206,9 +206,9 @@ console.log(JSON.stringify({
             </pre>
           </div>
 
-          <h2 style={{ color: '#8c5b08' }}>5. Security Best Practices</h2>
+          <h2 className="text-aws-smile font-semibold">5. Security Best Practices</h2>
 
-          <h3 style={{ color: '#8c5b08' }}>Principle of Least Privilege</h3>
+          <h3 className="text-aws-smile font-semibold">Principle of Least Privilege</h3>
           <p>
             Grant your Lambda functions only the minimum permissions required to perform their tasks.
           </p>
@@ -242,24 +242,24 @@ console.log(JSON.stringify({
             </pre>
           </div>
 
-          <h3 style={{ color: '#8c5b08' }}>Environment Variables for Secrets</h3>
+          <h3 className="text-aws-smile font-semibold">Environment Variables for Secrets</h3>
           <p>
             Use AWS Systems Manager Parameter Store or AWS Secrets Manager for sensitive configuration, not environment variables.
           </p>
 
-          <h2 style={{ color: '#8c5b08' }}>6. Cost Optimization</h2>
+          <h2 className="text-aws-smile font-semibold">6. Cost Optimization</h2>
 
-          <h3 style={{ color: '#8c5b08' }}>Provisioned Concurrency</h3>
+          <h3 className="text-aws-smile font-semibold">Provisioned Concurrency</h3>
           <p>
             For latency-sensitive applications, consider Provisioned Concurrency to eliminate cold starts, but monitor costs carefully.
           </p>
 
-          <h3 style={{ color: '#8c5b08' }}>ARM-based Graviton2 Processors</h3>
+          <h3 className="text-aws-smile font-semibold">ARM-based Graviton2 Processors</h3>
           <p>
             Use ARM-based Lambda functions for up to 34% better price performance compared to x86-based functions.
           </p>
 
-          <h2 style={{ color: '#8c5b08' }}>Final Thoughts</h2>
+          <h2 className="text-aws-smile font-semibold">Final Thoughts</h2>
           <p>
             Following these best practices will help you build Lambda functions that are performant, cost-effective, and maintainable. Remember that serverless doesn&apos;t mean &quot;no ops&quot; - it means different ops, and these practices will help you succeed in your serverless journey.
           </p>

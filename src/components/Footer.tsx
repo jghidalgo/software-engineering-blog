@@ -1,5 +1,5 @@
 import Link from 'next/link';
-import { CodeBracketIcon } from '@heroicons/react/24/solid';
+import { CloudIcon } from '@heroicons/react/24/solid';
 
 interface IconProps {
   className?: string;
@@ -68,54 +68,89 @@ const navigation = {
 
 export default function Footer() {
   return (
-    <footer className="bg-gradient-to-r from-primary-800 to-primary-900 dark:bg-gradient-to-r dark:from-primary-900 dark:to-secondary-900 border-t border-primary-700 dark:border-secondary-700">
-      <div className="mx-auto max-w-7xl overflow-hidden px-6 py-20 sm:py-24 lg:px-8">
-        <div className="flex justify-center mb-10">
-          <Link href="/" className="flex items-center space-x-2">
-            <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-gradient-to-r from-primary-500 to-primary-600">
-              <CodeBracketIcon className="h-6 w-6 text-white" />
-            </div>
-            <span className="text-2xl font-bold text-white">
-              DevBlog
-            </span>
-          </Link>
-        </div>
-        
-        <nav className="-mb-6 columns-2 sm:flex sm:justify-center sm:space-x-12" aria-label="Footer">
-          {navigation.main.map((item) => (
-            <div key={item.name} className="pb-6">
-              <Link
-                href={item.href}
-                className="text-sm leading-6 text-primary-100 hover:text-white transition-colors duration-200"
-              >
-                {item.name}
-              </Link>
-            </div>
-          ))}
-        </nav>
-        
-        <div className="mt-10 flex justify-center space-x-10">
-          {navigation.social.map((item) => (
-            <a
-              key={item.name}
-              href={item.href}
-              className="text-primary-200 hover:text-white transition-colors duration-200"
-            >
-              <span className="sr-only">{item.name}</span>
-              <item.icon className="h-6 w-6" aria-hidden="true" />
-            </a>
-          ))}
-        </div>
-        
-        <div className="mt-10 border-t border-primary-600 pt-8">
-          <div className="text-center">
-            <p className="text-xs leading-5 text-primary-100">
-              &copy; 2025 DevBlog. All rights reserved. Built with Next.js and Tailwind CSS.
+    <footer className="relative isolate overflow-hidden border-t border-white/5 bg-gradient-to-b from-[#0b1220] to-[#060a14] text-secondary-300">
+      <div className="absolute inset-x-0 top-0 -z-10 h-px bg-gradient-to-r from-transparent via-primary-500/60 to-transparent" />
+      <div className="pointer-events-none absolute -top-32 left-1/2 -z-10 h-72 w-[600px] -translate-x-1/2 rounded-full bg-primary-500/10 blur-3xl" />
+      <div className="pointer-events-none absolute -bottom-32 right-10 -z-10 h-72 w-[420px] rounded-full bg-aws-smile/10 blur-3xl" />
+
+      <div className="mx-auto max-w-7xl px-6 py-16 sm:py-20 lg:px-8">
+        <div className="grid gap-10 md:grid-cols-12">
+          {/* Brand */}
+          <div className="md:col-span-5">
+            <Link href="/" className="inline-flex items-center gap-2.5">
+              <div className="relative flex h-10 w-10 items-center justify-center rounded-xl bg-gradient-to-br from-primary-600 to-primary-800 shadow-glow ring-1 ring-white/10">
+                <CloudIcon className="h-5 w-5 text-white" />
+                <span className="absolute -bottom-0.5 -right-0.5 h-2.5 w-2.5 rounded-full bg-aws-smile ring-2 ring-[#0b1220]" />
+              </div>
+              <span className="text-lg font-semibold tracking-tight text-white">
+                AWS<span className="text-gradient">Mindset</span>
+              </span>
+            </Link>
+            <p className="mt-4 max-w-sm text-sm leading-relaxed text-secondary-400">
+              A personal field journal on Amazon Web Services — fresh launches, real-world
+              architectures, and the engineering trade-offs behind them.
             </p>
-            <p className="mt-2 text-xs leading-5 text-primary-200">
-              Sharing knowledge about software engineering and AWS cloud technologies.
+
+            <div className="mt-6 flex items-center gap-3">
+              {navigation.social.map((item) => (
+                <a
+                  key={item.name}
+                  href={item.href}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="group inline-flex h-9 w-9 items-center justify-center rounded-full border border-white/10 bg-white/[0.03] text-secondary-400 hover:text-white hover:bg-white/[0.08] hover:border-white/20 transition-all duration-200"
+                  aria-label={item.name}
+                >
+                  <item.icon className="h-4 w-4" />
+                </a>
+              ))}
+            </div>
+          </div>
+
+          {/* Links */}
+          <div className="md:col-span-3">
+            <h3 className="text-xs font-semibold uppercase tracking-[0.18em] text-secondary-400">
+              Explore
+            </h3>
+            <ul className="mt-4 space-y-2.5">
+              {navigation.main.map((item) => (
+                <li key={item.name}>
+                  <Link
+                    href={item.href}
+                    className="text-sm text-secondary-300 hover:text-white transition-colors duration-200"
+                  >
+                    {item.name}
+                  </Link>
+                </li>
+              ))}
+            </ul>
+          </div>
+
+          {/* Region / build chip */}
+          <div className="md:col-span-4">
+            <h3 className="text-xs font-semibold uppercase tracking-[0.18em] text-secondary-400">
+              Status
+            </h3>
+            <div className="mt-4 inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/[0.03] px-3 py-1.5 text-xs text-secondary-300">
+              <span className="relative flex h-2 w-2">
+                <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-emerald-400/70" />
+                <span className="relative inline-flex h-2 w-2 rounded-full bg-emerald-400" />
+              </span>
+              All systems operational
+            </div>
+            <p className="mt-4 text-xs text-secondary-500">
+              Built with Next.js, Tailwind CSS &amp; a healthy dose of <span className="text-aws-smile">AWS</span>.
             </p>
           </div>
+        </div>
+
+        <div className="mt-12 flex flex-col items-center justify-between gap-3 border-t border-white/5 pt-6 sm:flex-row">
+          <p className="text-xs text-secondary-500">
+            &copy; 2025 AWSMindset. All rights reserved.
+          </p>
+          <p className="text-xs text-secondary-500">
+            Crafted by Joan Rodríguez · <span className="font-mono text-secondary-400">us-east-1</span>
+          </p>
         </div>
       </div>
     </footer>

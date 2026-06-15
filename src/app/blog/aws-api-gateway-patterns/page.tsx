@@ -53,9 +53,9 @@ export default function BlogPost() {
             In this comprehensive guide, we&apos;ll explore proven API Gateway patterns, authentication strategies, performance optimizations, and monitoring approaches that will help you build APIs that scale.
           </p>
 
-          <h2 style={{ color: '#8c5b08' }}>API Gateway Types and When to Use Each</h2>
+          <h2 className="text-aws-smile font-semibold">API Gateway Types and When to Use Each</h2>
 
-          <h3 style={{ color: '#8c5b08' }}>REST API vs HTTP API vs WebSocket API</h3>
+          <h3 className="text-aws-smile font-semibold">REST API vs HTTP API vs WebSocket API</h3>
           <p>
             Understanding which API Gateway type to use is crucial for your architecture:
           </p>
@@ -69,9 +69,9 @@ export default function BlogPost() {
             </ul>
           </div>
 
-          <h2 style={{ color: '#8c5b08' }}>Authentication and Authorization Patterns</h2>
+          <h2 className="text-aws-smile font-semibold">Authentication and Authorization Patterns</h2>
 
-          <h3 style={{ color: '#8c5b08' }}>JWT Authorizer with Cognito</h3>
+          <h3 className="text-aws-smile font-semibold">JWT Authorizer with Cognito</h3>
           <p>
             The most common pattern for modern web applications combines Cognito User Pools with JWT authorizers:
           </p>
@@ -121,7 +121,7 @@ export default function BlogPost() {
             </pre>
           </div>
 
-          <h3 style={{ color: '#8c5b08' }}>Lambda Authorizer for Custom Logic</h3>
+          <h3 className="text-aws-smile font-semibold">Lambda Authorizer for Custom Logic</h3>
           <p>
             When you need custom authentication logic, Lambda authorizers provide maximum flexibility:
           </p>
@@ -181,9 +181,9 @@ function generatePolicy(principalId, effect, resource) {
             </pre>
           </div>
 
-          <h2 style={{ color: '#8c5b08' }}>Request/Response Transformation Patterns</h2>
+          <h2 className="text-aws-smile font-semibold">Request/Response Transformation Patterns</h2>
 
-          <h3 style={{ color: '#8c5b08' }}>Input Validation with Request Models</h3>
+          <h3 className="text-aws-smile font-semibold">Input Validation with Request Models</h3>
           <p>
             Always validate incoming requests at the gateway level to protect your backend services:
           </p>
@@ -234,7 +234,7 @@ function generatePolicy(principalId, effect, resource) {
             </pre>
           </div>
 
-          <h3 style={{ color: '#8c5b08' }}>Response Transformation for Consistent APIs</h3>
+          <h3 className="text-aws-smile font-semibold">Response Transformation for Consistent APIs</h3>
           <p>
             Use mapping templates to ensure consistent response formats across your API:
           </p>
@@ -279,9 +279,9 @@ function generatePolicy(principalId, effect, resource) {
             </pre>
           </div>
 
-          <h2 style={{ color: '#8c5b08' }}>Rate Limiting and Throttling Strategies</h2>
+          <h2 className="text-aws-smile font-semibold">Rate Limiting and Throttling Strategies</h2>
 
-          <h3 style={{ color: '#8c5b08' }}>Usage Plans and API Keys</h3>
+          <h3 className="text-aws-smile font-semibold">Usage Plans and API Keys</h3>
           <p>
             Implement tiered access with usage plans to monetize your API or provide different service levels:
           </p>
@@ -334,7 +334,7 @@ function generatePolicy(principalId, effect, resource) {
             </pre>
           </div>
 
-          <h3 style={{ color: '#8c5b08' }}>Method-Level Throttling</h3>
+          <h3 className="text-aws-smile font-semibold">Method-Level Throttling</h3>
           <p>
             Apply different rate limits to different endpoints based on their resource requirements:
           </p>
@@ -346,9 +346,9 @@ function generatePolicy(principalId, effect, resource) {
             <li><strong>Authentication endpoints</strong>: Very low limits (1-2 req/sec)</li>
           </ul>
 
-          <h2 style={{ color: '#8c5b08' }}>Error Handling and Circuit Breaker Patterns</h2>
+          <h2 className="text-aws-smile font-semibold">Error Handling and Circuit Breaker Patterns</h2>
 
-          <h3 style={{ color: '#8c5b08' }}>Gateway-Level Error Responses</h3>
+          <h3 className="text-aws-smile font-semibold">Gateway-Level Error Responses</h3>
           <p>
             Configure consistent error responses at the gateway level:
           </p>
@@ -404,9 +404,9 @@ function generatePolicy(principalId, effect, resource) {
             </pre>
           </div>
 
-          <h2 style={{ color: '#8c5b08' }}>Monitoring and Observability</h2>
+          <h2 className="text-aws-smile font-semibold">Monitoring and Observability</h2>
 
-          <h3 style={{ color: '#8c5b08' }}>Essential CloudWatch Metrics</h3>
+          <h3 className="text-aws-smile font-semibold">Essential CloudWatch Metrics</h3>
           <p>
             Monitor these key metrics to ensure API health:
           </p>
@@ -423,7 +423,7 @@ function generatePolicy(principalId, effect, resource) {
             </ul>
           </div>
 
-          <h3 style={{ color: '#8c5b08' }}>X-Ray Tracing for Deep Insights</h3>
+          <h3 className="text-aws-smile font-semibold">X-Ray Tracing for Deep Insights</h3>
           <p>
             Enable X-Ray tracing to understand request flows and identify bottlenecks:
           </p>
@@ -474,9 +474,9 @@ function generatePolicy(principalId, effect, resource) {
             </pre>
           </div>
 
-          <h2 style={{ color: '#8c5b08' }}>Performance Optimization Patterns</h2>
+          <h2 className="text-aws-smile font-semibold">Performance Optimization Patterns</h2>
 
-          <h3 style={{ color: '#8c5b08' }}>Caching Strategies</h3>
+          <h3 className="text-aws-smile font-semibold">Caching Strategies</h3>
           <p>
             Implement intelligent caching to reduce backend load and improve response times:
           </p>
@@ -488,7 +488,7 @@ function generatePolicy(principalId, effect, resource) {
             <li><strong>Conditional caching</strong>: Use cache only for GET requests with specific conditions</li>
           </ul>
 
-          <h3 style={{ color: '#8c5b08' }}>Connection Optimization</h3>
+          <h3 className="text-aws-smile font-semibold">Connection Optimization</h3>
           <p>
             Configure VPC Links and private integrations for better performance and security:
           </p>
@@ -530,9 +530,9 @@ function generatePolicy(principalId, effect, resource) {
             </pre>
           </div>
 
-          <h2 style={{ color: '#8c5b08' }}>Security Best Practices</h2>
+          <h2 className="text-aws-smile font-semibold">Security Best Practices</h2>
 
-          <h3 style={{ color: '#8c5b08' }}>API Security Checklist</h3>
+          <h3 className="text-aws-smile font-semibold">API Security Checklist</h3>
           <ul>
             <li><strong>Enable CORS properly</strong>: Configure specific origins, not wildcards</li>
             <li><strong>Use HTTPS only</strong>: Redirect HTTP to HTTPS</li>
@@ -543,7 +543,7 @@ function generatePolicy(principalId, effect, resource) {
             <li><strong>WAF integration</strong>: Protect against common web exploits</li>
           </ul>
 
-          <h2 style={{ color: '#8c5b08' }}>Conclusion</h2>
+          <h2 className="text-aws-smile font-semibold">Conclusion</h2>
           <p>
             AWS API Gateway is a powerful service that can handle the complex requirements of modern APIs when configured correctly. By implementing these patterns and best practices, you&apos;ll build APIs that are secure, performant, and maintainable.
           </p>

@@ -2,6 +2,7 @@
 
 import { useState } from 'react';
 import { EnvelopeIcon } from '@heroicons/react/24/outline';
+import Reveal from './Reveal';
 
 interface SubscriptionResponse {
   success: boolean;
@@ -58,76 +59,84 @@ export default function Newsletter() {
   };
 
   return (
-    <section className="bg-primary-50 dark:bg-secondary-800/50 py-16 sm:py-24">
+    <section className="relative py-20 sm:py-28">
       <div className="mx-auto max-w-7xl px-6 lg:px-8">
-        <div className="mx-auto max-w-2xl text-center">
-          <div className="flex justify-center mb-6">
-            <div className="flex h-12 w-12 items-center justify-center rounded-full bg-primary-100 dark:bg-primary-900/20">
-              <EnvelopeIcon className="h-6 w-6 text-primary-600 dark:text-primary-400" />
+        <Reveal className="relative isolate overflow-hidden rounded-3xl border border-secondary-200/60 dark:border-white/10 bg-gradient-to-br from-secondary-900 via-aws-ink to-secondary-900 px-6 py-16 sm:px-12 sm:py-20 shadow-card-hover">
+          {/* Decorative mesh & grid inside card */}
+          <div className="absolute inset-0 -z-10 bg-mesh opacity-30" />
+          <div className="absolute inset-0 -z-10 bg-grid opacity-40" />
+          <div className="absolute -top-24 -right-24 -z-10 h-72 w-72 rounded-full bg-aws-smile/20 blur-3xl float-slow" />
+          <div className="absolute -bottom-24 -left-24 -z-10 h-72 w-72 rounded-full bg-primary-500/20 blur-3xl float-slow [animation-delay:2s]" />
+
+          <div className="mx-auto max-w-2xl text-center">
+            <div className="mx-auto mb-6 inline-flex h-14 w-14 items-center justify-center rounded-2xl bg-white/10 ring-1 ring-white/20 backdrop-blur">
+              <EnvelopeIcon className="h-7 w-7 text-aws-smile" />
             </div>
-          </div>
-          
-          <h2 className="text-3xl font-bold tracking-tight text-secondary-900 dark:text-white sm:text-4xl">
-            Stay Updated
-          </h2>
-          <p className="mt-4 text-lg leading-8 text-secondary-700 dark:text-secondary-200">
-            Get the latest articles on software engineering and AWS delivered directly to your inbox. 
-            No spam, just quality content.
-          </p>
-          
-          {isSubmitted ? (
-            <div className="mt-8 p-4 rounded-lg bg-green-50 dark:bg-green-900/20 border border-green-200 dark:border-green-800">
-              <p className="text-green-800 dark:text-green-200">
-                Thanks for subscribing! You&apos;ll receive our latest updates soon.
-              </p>
-            </div>
-          ) : (
-            <div className="mt-8">
-              {error && (
-                <div className="mb-4 p-4 rounded-lg bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800">
-                  <p className="text-red-800 dark:text-red-200">{error}</p>
-                </div>
-              )}
-              
-              <form onSubmit={handleSubmit} className="flex flex-col sm:flex-row gap-4 max-w-md mx-auto">
-                <input
-                  type="email"
-                  value={email}
-                  onChange={(e) => {
-                    setEmail(e.target.value);
-                    if (error) setError(''); // Clear error when user starts typing
-                  }}
-                  placeholder="Enter your email"
-                  required
-                  disabled={isLoading}
-                  className="flex-1 min-w-0 px-4 py-3 text-base text-secondary-900 placeholder-secondary-500 bg-white border border-secondary-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500 dark:bg-secondary-700 dark:border-secondary-600 dark:text-white dark:placeholder-secondary-400 dark:focus:ring-primary-400 dark:focus:border-primary-400 disabled:opacity-50 disabled:cursor-not-allowed"
-                />
-                <button
-                  type="submit"
-                  disabled={isLoading || !email}
-                  className="px-6 py-3 text-base font-medium text-white bg-primary-600 border border-transparent rounded-lg hover:bg-primary-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-500 dark:focus:ring-offset-secondary-800 transition-colors duration-200 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center min-w-[120px]"
-                  style={{ backgroundColor: isLoading ? '#6b7280' : '#8c5b08' }}
+
+            <h2 className="text-3xl font-bold tracking-tight text-white sm:text-4xl">
+              The AWS Mindset, in your inbox
+            </h2>
+            <p className="mt-4 text-base leading-relaxed text-secondary-300">
+              One email a week: notable AWS releases, sharp architecture patterns, and the
+              behind-the-scenes notes you won&apos;t find in the docs.
+            </p>
+
+            {isSubmitted ? (
+              <div className="mx-auto mt-8 max-w-md rounded-xl border border-emerald-400/30 bg-emerald-500/10 p-4 backdrop-blur">
+                <p className="text-sm font-medium text-emerald-200">
+                  Subscribed. The next issue lands in your inbox soon.
+                </p>
+              </div>
+            ) : (
+              <div className="mx-auto mt-8 max-w-md">
+                {error && (
+                  <div className="mb-3 rounded-xl border border-red-400/30 bg-red-500/10 p-3 text-sm text-red-200 backdrop-blur">
+                    {error}
+                  </div>
+                )}
+
+                <form
+                  onSubmit={handleSubmit}
+                  className="flex flex-col sm:flex-row items-stretch gap-2 rounded-2xl border border-white/10 bg-white/[0.04] p-1.5 backdrop-blur"
                 >
-                  {isLoading ? (
-                    <>
-                      <svg className="animate-spin -ml-1 mr-2 h-4 w-4 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-                        <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
-                        <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-                      </svg>
-                      Subscribing...
-                    </>
-                  ) : (
-                    'Subscribe'
-                  )}
-                </button>
-              </form>
-            </div>
-          )}
-          
-          <p className="mt-4 text-xs text-secondary-500 dark:text-secondary-400">
-            We respect your privacy. Unsubscribe at any time.
-          </p>
-        </div>
+                  <input
+                    type="email"
+                    value={email}
+                    onChange={(e) => {
+                      setEmail(e.target.value);
+                      if (error) setError('');
+                    }}
+                    placeholder="you@company.com"
+                    required
+                    disabled={isLoading}
+                    className="min-w-0 flex-1 bg-transparent px-4 py-2.5 text-sm text-white placeholder:text-secondary-400 focus:outline-none disabled:opacity-50"
+                  />
+                  <button
+                    type="submit"
+                    disabled={isLoading || !email}
+                    className="inline-flex items-center justify-center gap-2 rounded-xl bg-aws-smile px-5 py-2.5 text-sm font-semibold text-secondary-900 shadow-glow-amber transition-all duration-200 hover:bg-aws-smile-soft disabled:opacity-60 disabled:cursor-not-allowed"
+                  >
+                    {isLoading ? (
+                      <>
+                        <svg className="-ml-1 h-4 w-4 animate-spin text-secondary-900" viewBox="0 0 24 24" fill="none">
+                          <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
+                          <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z" />
+                        </svg>
+                        Subscribing
+                      </>
+                    ) : (
+                      'Subscribe'
+                    )}
+                  </button>
+                </form>
+              </div>
+            )}
+
+            <p className="mt-4 text-xs text-secondary-400">
+              No spam. Unsubscribe in one click.
+            </p>
+          </div>
+        </Reveal>
       </div>
     </section>
   );

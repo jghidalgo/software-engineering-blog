@@ -53,9 +53,9 @@ export default function BlogPost() {
             AWS has introduced a game-changer: <strong>Console-to-IDE integration with Remote Debugging for AWS Lambda</strong>. This capability connects your Lambda functions directly with your IDE, enabling you to debug in real-time, with breakpoints, variable inspection, and local test events.
           </p>
 
-          <h2 style={{ color: '#8c5b08' }}>Key Features</h2>
+          <h2 className="text-aws-smile font-semibold">Key Features</h2>
 
-          <h3 style={{ color: '#8c5b08' }}>Console-to-IDE Linking</h3>
+          <h3 className="text-aws-smile font-semibold">Console-to-IDE Linking</h3>
           <p>
             From the Lambda console, you can now open a function directly in your local IDE (Visual Studio Code or JetBrains IDEs).
           </p>
@@ -63,7 +63,7 @@ export default function BlogPost() {
             The IDE connects through the AWS Toolkit plugin, automatically configuring your project for Lambda development.
           </p>
 
-          <h3 style={{ color: '#8c5b08' }}>Remote Debugging</h3>
+          <h3 className="text-aws-smile font-semibold">Remote Debugging</h3>
           <p>
             You can attach a remote debugger to a running Lambda.
           </p>
@@ -71,28 +71,28 @@ export default function BlogPost() {
             This means you can step through code execution in the actual AWS environment, while inspecting runtime values and resource behavior.
           </p>
 
-          <h3 style={{ color: '#8c5b08' }}>Local Development with Cloud Context</h3>
+          <h3 className="text-aws-smile font-semibold">Local Development with Cloud Context</h3>
           <p>
             By syncing your Lambda&apos;s configuration (environment variables, IAM role permissions, runtime settings) with your local environment, you can replicate production conditions more accurately.
           </p>
 
-          <h2 style={{ color: '#8c5b08' }}>Getting Started</h2>
+          <h2 className="text-aws-smile font-semibold">Getting Started</h2>
 
-          <h3 style={{ color: '#8c5b08' }}>Prerequisites</h3>
+          <h3 className="text-aws-smile font-semibold">Prerequisites</h3>
           <ul>
             <li>AWS Toolkit installed in your IDE (VS Code or JetBrains).</li>
             <li>AWS CLI configured with credentials.</li>
             <li>Permissions to use the Lambda console and attach debuggers.</li>
           </ul>
 
-          <h3 style={{ color: '#8c5b08' }}>Step 1: Open Function from Console</h3>
+          <h3 className="text-aws-smile font-semibold">Step 1: Open Function from Console</h3>
           <ol>
             <li>Navigate to your Lambda function in the AWS Console.</li>
             <li>Click <strong>&quot;Open in IDE&quot;</strong>.</li>
             <li>Your IDE will prompt to open the project, installing dependencies and creating a launch configuration.</li>
           </ol>
 
-          <h3 style={{ color: '#8c5b08' }}>Step 2: Enable Remote Debugging</h3>
+          <h3 className="text-aws-smile font-semibold">Step 2: Enable Remote Debugging</h3>
           <p>For <strong>Node.js</strong>, add the inspector flag in your <code>template.yaml</code> or function settings:</p>
           
           <div className="bg-gray-900 rounded-lg overflow-hidden shadow-lg mb-6">
@@ -141,7 +141,7 @@ export default function BlogPost() {
             </pre>
           </div>
 
-          <h3 style={{ color: '#8c5b08' }}>Step 3: Set Breakpoints and Debug</h3>
+          <h3 className="text-aws-smile font-semibold">Step 3: Set Breakpoints and Debug</h3>
           <ol>
             <li>In your IDE, choose <strong>Run → Start Debugging</strong>.</li>
             <li>Set breakpoints in your code.</li>
@@ -149,14 +149,14 @@ export default function BlogPost() {
             <li>Watch the debugger hit breakpoints, showing live values.</li>
           </ol>
 
-          <h2 style={{ color: '#8c5b08' }}>Developer Benefits</h2>
+          <h2 className="text-aws-smile font-semibold">Developer Benefits</h2>
           <ul>
             <li><strong>Faster iteration</strong>: No need to redeploy for every change—you can test and debug interactively.</li>
             <li><strong>Production-accurate debugging</strong>: Functions run with the same permissions, environment variables, and triggers as in AWS.</li>
             <li><strong>Seamless collaboration</strong>: Teams standardize their workflow by using IDE configurations tied to the Lambda console.</li>
           </ul>
 
-          <h2 style={{ color: '#8c5b08' }}>Final Thoughts</h2>
+          <h2 className="text-aws-smile font-semibold">Final Thoughts</h2>
           <p>
             This update significantly improves the developer experience for serverless builders. Whether you&apos;re building microservices, event-driven apps, or data pipelines, remote debugging will save hours of log-checking and redeploying.
           </p>

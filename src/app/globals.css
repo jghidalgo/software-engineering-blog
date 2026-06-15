@@ -1,15 +1,131 @@
 @import "tailwindcss";
 
-:root {
-  --background: #ffffff;
-  --foreground: #1e293b;
+/* Tailwind v4: load typography plugin */
+@plugin "@tailwindcss/typography";
+
+/* Tailwind v4: dark mode driven by the .dark class (set by our ThemeToggle),
+   NOT by prefers-color-scheme. The :where() keeps specificity at zero. */
+@custom-variant dark (&:where(.dark, .dark *));
+
+/* ===========================================================
+   Tailwind v4 theme — colors, fonts, animations, shadows
+   These map to utilities like text-primary-600, bg-aws-smile, shadow-glow, etc.
+   =========================================================== */
+@theme {
+  /* Primary — refined cobalt blue */
+  --color-primary-50: #eff6ff;
+  --color-primary-100: #dbeafe;
+  --color-primary-200: #bfdbfe;
+  --color-primary-300: #93c5fd;
+  --color-primary-400: #60a5fa;
+  --color-primary-500: #3b82f6;
+  --color-primary-600: #2563eb;
+  --color-primary-700: #1d4ed8;
+  --color-primary-800: #1e40af;
+  --color-primary-900: #1e3a8a;
+  --color-primary-950: #172554;
+
+  /* Secondary — slate */
+  --color-secondary-50: #f8fafc;
+  --color-secondary-100: #f1f5f9;
+  --color-secondary-200: #e2e8f0;
+  --color-secondary-300: #cbd5e1;
+  --color-secondary-400: #94a3b8;
+  --color-secondary-500: #64748b;
+  --color-secondary-600: #475569;
+  --color-secondary-700: #334155;
+  --color-secondary-800: #1e293b;
+  --color-secondary-900: #0f172a;
+  --color-secondary-950: #020617;
+
+  /* Accent — refined amber */
+  --color-accent-50: #fffbeb;
+  --color-accent-100: #fef3c7;
+  --color-accent-200: #fde68a;
+  --color-accent-300: #fcd34d;
+  --color-accent-400: #fbbf24;
+  --color-accent-500: #f59e0b;
+  --color-accent-600: #d97706;
+  --color-accent-700: #b45309;
+  --color-accent-800: #92400e;
+  --color-accent-900: #78350f;
+
+  /* AWS brand */
+  --color-aws-ink: #232f3e;
+  --color-aws-deep: #161e2d;
+  --color-aws-smile: #ff9900;
+  --color-aws-smile-soft: #ffac33;
+
+  /* Cyan accent */
+  --color-cyan-400: #22d3ee;
+  --color-cyan-500: #06b6d4;
+  --color-cyan-600: #0891b2;
+
+  /* Fonts */
+  --font-sans: var(--font-inter), Inter, system-ui, sans-serif;
+  --font-mono: var(--font-jetbrains-mono), 'JetBrains Mono', Monaco, 'Cascadia Code', monospace;
+
+  /* Shadows */
+  --shadow-glow: 0 0 0 1px rgba(59, 130, 246, 0.10), 0 8px 24px -8px rgba(59, 130, 246, 0.35);
+  --shadow-glow-amber: 0 0 0 1px rgba(245, 158, 11, 0.15), 0 8px 24px -8px rgba(245, 158, 11, 0.45);
+  --shadow-card: 0 1px 2px rgba(15, 23, 42, 0.04), 0 8px 24px -12px rgba(15, 23, 42, 0.12);
+  --shadow-card-hover: 0 1px 2px rgba(15, 23, 42, 0.06), 0 20px 40px -12px rgba(15, 23, 42, 0.18);
+
+  /* Animations */
+  --animate-float: float-y 7s ease-in-out infinite;
+  --animate-fade-up: fade-up 0.7s ease-out both;
+  --animate-gradient-shift: gradient-shift 12s ease infinite;
+  --animate-shimmer: shimmer 2.2s linear infinite;
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0f172a;
-    --foreground: #f1f5f9;
-  }
+@keyframes fade-up {
+  0%   { opacity: 0; transform: translateY(12px); }
+  100% { opacity: 1; transform: translateY(0); }
+}
+
+/* ===========================================================
+   Design tokens — Professional AWS-themed palette
+   =========================================================== */
+:root {
+  --background: #f8fafc;
+  --background-elevated: #ffffff;
+  --foreground: #0f172a;
+  --foreground-muted: #475569;
+  --border-subtle: rgba(15, 23, 42, 0.08);
+  --border: rgba(15, 23, 42, 0.14);
+
+  --brand: #2563eb;
+  --brand-strong: #1d4ed8;
+  --aws-smile: #ff9900;
+  --aws-ink: #232f3e;
+  --cyan: #06b6d4;
+
+  --ring: 0 0 0 1px rgba(37, 99, 235, 0.35), 0 0 0 4px rgba(37, 99, 235, 0.18);
+}
+
+html.dark {
+  --background: #060a14;
+  --background-elevated: #0b1220;
+  --foreground: #e2e8f0;
+  --foreground-muted: #94a3b8;
+  --border-subtle: rgba(148, 163, 184, 0.08);
+  --border: rgba(148, 163, 184, 0.14);
+  --ring: 0 0 0 1px rgba(96, 165, 250, 0.45), 0 0 0 4px rgba(96, 165, 250, 0.20);
+  color-scheme: dark;
+}
+html:not(.dark) { color-scheme: light; }
+
+html {
+  scroll-behavior: smooth;
+  /* Smooth theme transition without animating layout-heavy properties */
+  transition: background-color 0.25s ease, color 0.25s ease;
+}
+html.theme-transition,
+html.theme-transition *,
+html.theme-transition *::before,
+html.theme-transition *::after {
+  transition: background-color 0.25s ease, color 0.25s ease,
+              border-color 0.25s ease, fill 0.25s ease, stroke 0.25s ease !important;
 }
 
 body {
@@ -17,36 +133,239 @@ body {
   color: var(--foreground);
   font-family: 'Inter', system-ui, sans-serif;
   line-height: 1.6;
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
 }
 
-/* Custom scrollbar */
-::-webkit-scrollbar {
-  width: 8px;
+/* ===========================================================
+   Decorative backgrounds
+   =========================================================== */
+
+/* Subtle grid for hero / section backdrops */
+.bg-grid {
+  background-image:
+    linear-gradient(rgba(148,163,184,0.10) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(148,163,184,0.10) 1px, transparent 1px);
+  background-size: 36px 36px;
+  mask-image: radial-gradient(ellipse 60% 60% at 50% 40%, #000 40%, transparent 100%);
+  -webkit-mask-image: radial-gradient(ellipse 60% 60% at 50% 40%, #000 40%, transparent 100%);
+}
+html.dark .bg-grid {
+  background-image:
+    linear-gradient(rgba(148,163,184,0.08) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(148,163,184,0.08) 1px, transparent 1px);
 }
 
-::-webkit-scrollbar-track {
-  background: #f1f5f9;
+/* Animated mesh gradient — used on hero & newsletter */
+.bg-mesh {
+  background:
+    radial-gradient(60% 50% at 15% 20%, rgba(59, 130, 246, 0.22), transparent 60%),
+    radial-gradient(50% 50% at 85% 10%, rgba(34, 211, 238, 0.16), transparent 65%),
+    radial-gradient(60% 50% at 80% 80%, rgba(255, 153, 0, 0.14), transparent 60%),
+    radial-gradient(50% 60% at 10% 90%, rgba(124, 58, 237, 0.12), transparent 60%);
+  background-size: 200% 200%;
+  animation: mesh-shift 18s ease-in-out infinite;
+}
+@keyframes mesh-shift {
+  0%, 100% { background-position: 0% 0%, 100% 0%, 100% 100%, 0% 100%; }
+  50%      { background-position: 20% 20%, 80% 20%, 80% 80%, 20% 80%; }
 }
 
+/* Gradient text — used for highlights */
+.text-gradient {
+  background: linear-gradient(120deg, #60a5fa 0%, #22d3ee 45%, #ff9900 100%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+  background-size: 200% auto;
+  animation: gradient-shift 8s ease infinite;
+}
+@keyframes gradient-shift {
+  0%, 100% { background-position: 0% 50%; }
+  50%      { background-position: 100% 50%; }
+}
+
+/* Glass surfaces */
+.glass {
+  background: rgba(255, 255, 255, 0.65);
+  backdrop-filter: saturate(180%) blur(14px);
+  -webkit-backdrop-filter: saturate(180%) blur(14px);
+  border: 1px solid var(--border-subtle);
+}
+html.dark .glass {
+  background: rgba(15, 23, 42, 0.55);
+  border-color: rgba(148, 163, 184, 0.10);
+}
+
+.glass-strong {
+  background: rgba(255, 255, 255, 0.85);
+  backdrop-filter: saturate(180%) blur(20px);
+  -webkit-backdrop-filter: saturate(180%) blur(20px);
+  border: 1px solid var(--border-subtle);
+}
+html.dark .glass-strong {
+  background: rgba(11, 18, 32, 0.78);
+  border-color: rgba(148, 163, 184, 0.10);
+}
+
+/* Card with animated gradient border on hover */
+.card-glow {
+  position: relative;
+  isolation: isolate;
+  transition: transform 0.35s ease, box-shadow 0.35s ease;
+}
+.card-glow::before {
+  content: "";
+  position: absolute;
+  inset: -1px;
+  border-radius: inherit;
+  padding: 1px;
+  background: linear-gradient(135deg, rgba(59,130,246,0.0), rgba(34,211,238,0.0), rgba(255,153,0,0.0));
+  -webkit-mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
+  mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
+  -webkit-mask-composite: xor;
+          mask-composite: exclude;
+  opacity: 0;
+  transition: opacity 0.4s ease;
+  z-index: -1;
+  pointer-events: none;
+}
+.card-glow:hover {
+  transform: translateY(-3px);
+}
+.card-glow:hover::before {
+  opacity: 1;
+  background: linear-gradient(135deg, rgba(59,130,246,0.55), rgba(34,211,238,0.45), rgba(255,153,0,0.45));
+}
+
+/* Shimmer effect for skeletons / accents */
+.shimmer {
+  background: linear-gradient(110deg, transparent 30%, rgba(255,255,255,0.25) 50%, transparent 70%);
+  background-size: 200% 100%;
+  animation: shimmer 2.5s linear infinite;
+}
+@keyframes shimmer {
+  0%   { background-position: -200% 0; }
+  100% { background-position: 200% 0; }
+}
+
+/* Floating animation for accent blobs */
+@keyframes float-y {
+  0%, 100% { transform: translateY(0) rotate(0deg); }
+  50%      { transform: translateY(-14px) rotate(2deg); }
+}
+.float-slow { animation: float-y 9s ease-in-out infinite; }
+
+/* Refined focus ring */
+:where(a, button, input, textarea, select):focus-visible {
+  outline: none;
+  box-shadow: var(--ring);
+  border-radius: 8px;
+}
+
+/* ===========================================================
+   Scrollbar
+   =========================================================== */
+::-webkit-scrollbar { width: 10px; height: 10px; }
+::-webkit-scrollbar-track { background: transparent; }
 ::-webkit-scrollbar-thumb {
-  background: #cbd5e1;
-  border-radius: 4px;
+  background: linear-gradient(180deg, #cbd5e1, #94a3b8);
+  border-radius: 8px;
+  border: 2px solid transparent;
+  background-clip: padding-box;
 }
-
 ::-webkit-scrollbar-thumb:hover {
-  background: #94a3b8;
+  background: linear-gradient(180deg, #94a3b8, #64748b);
+  background-clip: padding-box;
+  border: 2px solid transparent;
+}
+html.dark ::-webkit-scrollbar-thumb {
+  background: linear-gradient(180deg, #334155, #1e293b);
+  background-clip: padding-box;
+}
+html.dark ::-webkit-scrollbar-thumb:hover {
+  background: linear-gradient(180deg, #475569, #334155);
+  background-clip: padding-box;
 }
 
-@media (prefers-color-scheme: dark) {
-  ::-webkit-scrollbar-track {
-    background: #1e293b;
+/* ===========================================================
+   Spotlight — pointer-tracking radial glow
+   =========================================================== */
+.spotlight-host {
+  position: relative;
+  isolation: isolate;
+}
+.spotlight-host::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  border-radius: inherit;
+  background: radial-gradient(
+    var(--spot-size, 420px) circle at var(--spot-x, 50%) var(--spot-y, 50%),
+    var(--spot-color, rgba(56, 189, 248, 0.18)),
+    transparent 40%
+  );
+  opacity: 0;
+  transition: opacity 300ms ease;
+  z-index: 0;
+}
+.spotlight-host:hover::before,
+.spotlight-host:focus-within::before {
+  opacity: 1;
+}
+/* Spotlight should sit between background & content */
+.spotlight-host > * {
+  position: relative;
+  z-index: 1;
+}
+
+/* ===========================================================
+   Reveal — IntersectionObserver fade-up
+   =========================================================== */
+.reveal {
+  opacity: 0;
+  transform: translateY(18px);
+  transition: opacity 0.75s cubic-bezier(0.16, 1, 0.3, 1),
+              transform 0.75s cubic-bezier(0.16, 1, 0.3, 1);
+  will-change: opacity, transform;
+}
+.reveal.is-visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+@media (prefers-reduced-motion: reduce) {
+  .reveal,
+  .reveal.is-visible {
+    opacity: 1;
+    transform: none;
+    transition: none;
   }
-  
-  ::-webkit-scrollbar-thumb {
-    background: #475569;
-  }
-  
-  ::-webkit-scrollbar-thumb:hover {
-    background: #8c5b08;
-  }
+}
+
+/* ===========================================================
+   Card cover — abstract grid + radial pattern overlay
+   =========================================================== */
+.cover-pattern {
+  position: absolute;
+  inset: 0;
+  background-image:
+    linear-gradient(rgba(255,255,255,0.08) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(255,255,255,0.08) 1px, transparent 1px),
+    radial-gradient(circle at 20% 20%, rgba(255,255,255,0.25), transparent 35%),
+    radial-gradient(circle at 80% 80%, rgba(0,0,0,0.25), transparent 40%);
+  background-size: 22px 22px, 22px 22px, 100% 100%, 100% 100%;
+  mix-blend-mode: overlay;
+  opacity: 0.85;
+  pointer-events: none;
+}
+
+/* ===========================================================
+   Utility line-clamp (fallback if missing)
+   =========================================================== */
+.line-clamp-3 {
+  display: -webkit-box;
+  -webkit-line-clamp: 3;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
 }

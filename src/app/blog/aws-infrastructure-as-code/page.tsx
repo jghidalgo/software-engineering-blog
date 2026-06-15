@@ -53,9 +53,9 @@ export default function BlogPost() {
             In this comprehensive guide, we&apos;ll explore how to leverage AWS CDK to build scalable, maintainable infrastructure with TypeScript, covering everything from basic concepts to advanced patterns used in production.
           </p>
 
-          <h2 style={{ color: '#8c5b08' }}>Why Choose AWS CDK?</h2>
+          <h2 className="text-aws-smile font-semibold">Why Choose AWS CDK?</h2>
 
-          <h3 style={{ color: '#8c5b08' }}>Beyond CloudFormation Templates</h3>
+          <h3 className="text-aws-smile font-semibold">Beyond CloudFormation Templates</h3>
           <p>
             While CloudFormation templates are powerful, they can become unwieldy as your infrastructure grows. CDK addresses these challenges:
           </p>
@@ -68,9 +68,9 @@ export default function BlogPost() {
             <li><strong>Testing</strong>: Unit test your infrastructure code</li>
           </ul>
 
-          <h2 style={{ color: '#8c5b08' }}>Getting Started with CDK</h2>
+          <h2 className="text-aws-smile font-semibold">Getting Started with CDK</h2>
 
-          <h3 style={{ color: '#8c5b08' }}>Installation and Setup</h3>
+          <h3 className="text-aws-smile font-semibold">Installation and Setup</h3>
           <p>
             First, install the AWS CDK CLI and initialize a new TypeScript project:
           </p>
@@ -100,7 +100,7 @@ npm install`}
             </pre>
           </div>
 
-          <h3 style={{ color: '#8c5b08' }}>Project Structure</h3>
+          <h3 className="text-aws-smile font-semibold">Project Structure</h3>
           <p>
             A typical CDK project structure looks like this:
           </p>
@@ -130,9 +130,9 @@ npm install`}
             </pre>
           </div>
 
-          <h2 style={{ color: '#8c5b08' }}>Building Your First Stack</h2>
+          <h2 className="text-aws-smile font-semibold">Building Your First Stack</h2>
 
-          <h3 style={{ color: '#8c5b08' }}>Creating a Simple Web Application Stack</h3>
+          <h3 className="text-aws-smile font-semibold">Creating a Simple Web Application Stack</h3>
           <p>
             Let&apos;s build a stack that includes an S3 bucket for static hosting, CloudFront distribution, and a Lambda function:
           </p>
@@ -212,9 +212,9 @@ export class WebAppStack extends cdk.Stack {
             </pre>
           </div>
 
-          <h2 style={{ color: '#8c5b08' }}>Advanced CDK Patterns</h2>
+          <h2 className="text-aws-smile font-semibold">Advanced CDK Patterns</h2>
 
-          <h3 style={{ color: '#8c5b08' }}>Creating Reusable Constructs</h3>
+          <h3 className="text-aws-smile font-semibold">Creating Reusable Constructs</h3>
           <p>
             One of CDK&apos;s most powerful features is the ability to create reusable constructs. Here&apos;s an example of a database construct:
           </p>
@@ -285,7 +285,7 @@ export class DatabaseConstruct extends Construct {
             </pre>
           </div>
 
-          <h3 style={{ color: '#8c5b08' }}>Environment-Specific Configuration</h3>
+          <h3 className="text-aws-smile font-semibold">Environment-Specific Configuration</h3>
           <p>
             Use CDK context and environment variables to manage different deployment environments:
           </p>
@@ -323,9 +323,9 @@ export class DatabaseConstruct extends Construct {
             </pre>
           </div>
 
-          <h2 style={{ color: '#8c5b08' }}>Testing Your Infrastructure</h2>
+          <h2 className="text-aws-smile font-semibold">Testing Your Infrastructure</h2>
 
-          <h3 style={{ color: '#8c5b08' }}>Unit Testing with Jest</h3>
+          <h3 className="text-aws-smile font-semibold">Unit Testing with Jest</h3>
           <p>
             CDK allows you to unit test your infrastructure code. Here&apos;s an example test:
           </p>
@@ -375,9 +375,9 @@ test('Web App Stack creates Lambda function', () => {
             </pre>
           </div>
 
-          <h2 style={{ color: '#8c5b08' }}>Deployment and Best Practices</h2>
+          <h2 className="text-aws-smile font-semibold">Deployment and Best Practices</h2>
 
-          <h3 style={{ color: '#8c5b08' }}>Deployment Pipeline</h3>
+          <h3 className="text-aws-smile font-semibold">Deployment Pipeline</h3>
           <p>
             Set up a proper CI/CD pipeline for your infrastructure:
           </p>
@@ -409,7 +409,7 @@ cdk deploy --context environment=prod --require-approval never`}
             </pre>
           </div>
 
-          <h3 style={{ color: '#8c5b08' }}>Key Best Practices</h3>
+          <h3 className="text-aws-smile font-semibold">Key Best Practices</h3>
           <ul>
             <li><strong>Use meaningful construct names</strong>: Make them descriptive and consistent</li>
             <li><strong>Implement proper tagging</strong>: Tag resources for cost tracking and management</li>
@@ -419,7 +419,7 @@ cdk deploy --context environment=prod --require-approval never`}
             <li><strong>Implement proper error handling</strong>: Handle deployment failures gracefully</li>
           </ul>
 
-          <h2 style={{ color: '#8c5b08' }}>Conclusion</h2>
+          <h2 className="text-aws-smile font-semibold">Conclusion</h2>
           <p>
             AWS CDK represents a significant step forward in infrastructure as code, bringing software engineering best practices to infrastructure management. By leveraging TypeScript&apos;s type safety, IDE support, and familiar programming constructs, teams can build more maintainable and scalable infrastructure.
           </p>
