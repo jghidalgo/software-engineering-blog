@@ -1,6 +1,7 @@
 import { Metadata } from 'next';
-import BlogCard, { BlogPost } from '@/components/BlogCard';
+import BlogCard from '@/components/BlogCard';
 import Reveal from '@/components/Reveal';
+import { getAllPosts } from '@/lib/posts';
 import {
   AwsSmileLogo,
   LambdaIcon,
@@ -14,72 +15,12 @@ import {
 } from '@/components/aws-icons';
 
 export const metadata: Metadata = {
-  title: 'AWS Content - DevBlog',
+  title: 'AWS Content - AWSMindset',
   description: 'Comprehensive guides, tutorials, and best practices for AWS cloud technologies.',
 };
 
-const awsPosts: BlogPost[] = [
-  {
-    slug: 'aws-lambda-best-practices',
-    title: 'AWS Lambda Best Practices: Building Serverless Applications',
-    excerpt: 'Learn the essential best practices for building efficient, scalable, and maintainable serverless applications with AWS Lambda. From cold start optimization to error handling.',
-    content: '',
-    date: '2025-01-10',
-    author: 'DevBlog',
-    tags: ['AWS', 'Lambda', 'Serverless', 'Best Practices'],
-    readTime: '8 min read',
-  },
-  {
-    slug: 'aws-infrastructure-as-code',
-    title: 'Infrastructure as Code with AWS CDK',
-    excerpt: 'Discover how to manage your AWS infrastructure using the AWS CDK and TypeScript for better maintainability and version control.',
-    content: '',
-    date: '2025-01-05',
-    author: 'DevBlog',
-    tags: ['AWS', 'CDK', 'Infrastructure', 'TypeScript'],
-    readTime: '10 min read',
-  },
-  {
-    slug: 'microservices-architecture-aws',
-    title: 'Building Microservices Architecture on AWS',
-    excerpt: 'A comprehensive guide to designing and implementing microservices architecture using AWS services like ECS, API Gateway, and RDS.',
-    content: '',
-    date: '2025-01-01',
-    author: 'DevBlog',
-    tags: ['AWS', 'Microservices', 'Architecture', 'ECS'],
-    readTime: '18 min read',
-  },
-  {
-    slug: 'aws-api-gateway-patterns',
-    title: 'AWS API Gateway Patterns and Best Practices',
-    excerpt: 'Learn how to design robust APIs using AWS API Gateway with proper authentication, rate limiting, and monitoring.',
-    content: '',
-    date: '2024-12-25',
-    author: 'DevBlog',
-    tags: ['AWS', 'API Gateway', 'REST', 'Serverless'],
-    readTime: '11 min read',
-  },
-  {
-    slug: 'aws-security-best-practices',
-    title: 'AWS Security Best Practices: A Comprehensive Guide',
-    excerpt: 'Essential security practices for AWS environments, including IAM, VPC configuration, encryption, and monitoring.',
-    content: '',
-    date: '2024-12-20',
-    author: 'DevBlog',
-    tags: ['AWS', 'Security', 'IAM', 'Best Practices'],
-    readTime: '16 min read',
-  },
-  {
-    slug: 'aws-cost-optimization',
-    title: 'AWS Cost Optimization Strategies',
-    excerpt: 'Learn how to optimize your AWS costs without compromising performance using reserved instances, spot instances, and monitoring tools.',
-    content: '',
-    date: '2024-12-15',
-    author: 'DevBlog',
-    tags: ['AWS', 'Cost Optimization', 'FinOps', 'Cloud Economics'],
-    readTime: '13 min read',
-  },
-];
+// ISR — re-fetch Airtable at most once a minute
+export const revalidate = 60;
 
 const awsServices = [
   { name: 'Lambda',       category: 'Compute',     desc: 'Run code without managing servers', Icon: LambdaIcon },
@@ -92,7 +33,8 @@ const awsServices = [
   { name: 'CloudWatch',   category: 'Management',  desc: 'Observability & telemetry',         Icon: CloudWatchIcon },
 ];
 
-export default function AWSPage() {
+export default async function AWSPage() {
+  const awsPosts = await getAllPosts({ tag: 'AWS' });
   return (
     <div className="relative overflow-hidden">
       {/* Backdrop */}
@@ -179,7 +121,7 @@ export default function AWSPage() {
                 delay={Math.min(i * 70, 350)}
                 className="h-full"
               >
-                <BlogCard post={post} />
+                <BlogCard post={post} href={post.href} />
               </Reveal>
             ))}
           </div>

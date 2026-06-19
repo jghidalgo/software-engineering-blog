@@ -22,17 +22,21 @@ interface BlogCardProps {
   featured?: boolean;
   /** Visual size variant for bento layouts. */
   variant?: 'hero' | 'standard';
+  /** Optional href override (defaults to `/blog/<slug>`). */
+  href?: string;
 }
 
 export default function BlogCard({
   post,
   featured = false,
   variant = 'standard',
+  href,
 }: BlogCardProps) {
   const postDate = new Date(post.date);
   const isAWS = post.tags.some((t) => t.toLowerCase() === 'aws');
   const grad = gradientFromSlug(post.slug);
   const isHero = variant === 'hero';
+  const linkHref = href ?? `/blog/${post.slug}`;
 
   return (
     <Spotlight
@@ -105,7 +109,7 @@ export default function BlogCard({
             isHero ? 'text-2xl sm:text-3xl' : 'text-lg'
           }`}
         >
-          <Link href={`/blog/${post.slug}`}>
+          <Link href={linkHref}>
             <span className="absolute inset-0" aria-hidden="true" />
             {post.title}
           </Link>

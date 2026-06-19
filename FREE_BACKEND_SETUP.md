@@ -189,3 +189,110 @@ NEXT_PUBLIC_EMAILJS_PUBLIC_KEY=your_public_key
 Your free backend is now ready! 🎉
 
 Total cost: **$0/month** for reasonable traffic volumes.
+
+---
+
+## 🤖 AWS News Pipeline (auto-draft articles)
+
+Once a day, a Vercel Cron job fetches the AWS "What's New" RSS feed, asks
+OpenAI to write an editorial summary with commentary, and inserts the result
+as a **draft** into a new Airtable table. You review the draft in Airtable
+and flip its `status` to `published` to make it live on the site.
+
+### 1. Add a `Posts` table to your Airtable base
+
+In the same base used for contact/newsletter, create one more table:
+
+- **Table name**: `Posts`
+- **Fields** (exact names matter — used by the API):
+  - `slug` — Single line text
+  - `title` — Single line text
+  - `excerpt` — Long text
+  - `body` — Long text
+  - `tags` — Long text (comma-separated)
+  - `readTime` — Single line text
+  - `status` — Single select with options `draft`, `published` (default `draft`)
+  - `sourceUrl` — URL
+  - `sourceTitle` — Single line text
+  - `sourceGuid` — Single line text (primary dedup key)
+  - `sourceLinkNorm` — Single line text (fallback dedup key)
+  - `publishedAt` — Date
+  - `createdAt` — Created time (Airtable built-in)
+
+Reuse the same Personal Access Token — it already has `data.records:read` and
+`data.records:write` scope.
+
+### 2. Add the new environment variables
+
+Append to your `.env.local` and to the Vercel project Environment Variables:
+
+```env
+# OpenAI — used to rewrite AWS announcements as editorial drafts
+OPENAI_API_KEY=sk-...
+
+# Vercel Cron — random string the cron route checks via Bearer token
+CRON_SECRET=replace-with-a-long-random-string
+```
+
+Generate `CRON_SECRET` with `openssl rand -hex 32` or any random string of
+at least 32 characters. Vercel automatically sends it as
+`Authorization: Bearer ${CRON_SECRET}` to scheduled routes.
+
+### 3. (Recommended) Set a hard OpenAI spend limit
+
+Visit OpenAI dashboard → Billing → Usage limits → set a monthly hard cap
+(e.g. **$5/month**). At gpt-4o-mini pricing this covers hundreds of articles
+and protects against runaway costs from any bug.
+
+### 4. Deploy — Vercel registers the cron automatically
+
+The cron schedule lives in `vercel.json` at the project root:
+
+```json
+{ "crons": [{ "path": "/api/cron/aws-news", "schedule": "0 13 * * *" }] }
+```
+
+After your next deploy, open **Vercel dashboard → Project → Settings → Cron
+Jobs** and confirm `aws-news` is listed with schedule `0 13 * * *` (13:00 UTC
+daily). The Hobby tier allows one cron per day; that's all we need.
+
+You can also click **Trigger** there to fire a run immediately.
+
+### 5. Local dry-run
+
+```bash
+# from a separate terminal while `npm run dev` is running
+curl -H "Authorization: Bearer $CRON_SECRET" http://localhost:3000/api/cron/aws-news
+```
+
+Expected JSON response:
+
+```json
+{ "ok": true, "processed": N, "skipped": M, "errors": [] }
+```
+
+New rows should appear in the Airtable `Posts` table with `status='draft'`.
+Wrong/missing token returns 401.
+
+### 6. Reviewing & publishing
+
+1. Open the `Posts` table in Airtable.
+2. Read the AI-generated `title`, `excerpt`, `body`. Edit anything that
+   feels off — the AI is a starting draft, not the final word.
+3. Change `status` from `draft` to `published`.
+4. Optionally fill in `publishedAt` with today's date (sets the displayed
+   article date).
+5. Within ~60 seconds, the article appears on `/blog` and at
+   `/blog/news/<slug>`. The article page automatically attributes AWS as
+   the source and emits `<link rel="canonical">` to the original AWS URL.
+
+### Tuning
+
+- **Frequency**: Edit the cron expression in `vercel.json`. Daily is the
+  only option on Vercel Hobby; sub-daily requires Pro.
+- **Per-run cap**: `MAX_ITEMS_PER_RUN` in
+  `src/app/api/cron/aws-news/route.ts` (default 5). Higher values risk the
+  60s timeout on Hobby.
+- **Editorial voice**: Tweak the system prompt in
+  `src/lib/openai-rewrite.ts` — the structure (`## What's new` + `## Why it
+  matters`) and word count window are defined there.
