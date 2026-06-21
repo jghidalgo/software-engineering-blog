@@ -195,9 +195,13 @@ Total cost: **$0/month** for reasonable traffic volumes.
 ## 🤖 AWS News Pipeline (auto-draft articles)
 
 Once a day, a Vercel Cron job fetches the AWS "What's New" RSS feed, asks
-OpenAI to write an editorial summary with commentary, and inserts the result
-as a **draft** into a new Airtable table. You review the draft in Airtable
-and flip its `status` to `published` to make it live on the site.
+**Google Gemini** to write an editorial summary with commentary, and inserts
+the result as a **draft** into a new Airtable table. You review the draft in
+Airtable and flip its `status` to `published` to make it live on the site.
+
+> Why Gemini: the free tier on `gemini-1.5-flash` allows 1,500 requests/day
+> and 1M tokens/day — orders of magnitude beyond what a daily cron needs.
+> No credit card required.
 
 ### 1. Add a `Posts` table to your Airtable base
 
@@ -222,13 +226,23 @@ In the same base used for contact/newsletter, create one more table:
 Reuse the same Personal Access Token — it already has `data.records:read` and
 `data.records:write` scope.
 
-### 2. Add the new environment variables
+### 2. Get a free Gemini API key
+
+1. Go to **[aistudio.google.com/app/apikey](https://aistudio.google.com/app/apikey)**
+2. Sign in with any Google account (no credit card required)
+3. Click **Create API key** → pick or create a Google Cloud project
+4. Copy the key (starts with `AIza...`)
+
+The free tier on `gemini-1.5-flash` gives you 15 requests/minute,
+1,500/day, and 1M tokens/day — far beyond what a daily cron needs.
+
+### 3. Add the new environment variables
 
 Append to your `.env.local` and to the Vercel project Environment Variables:
 
 ```env
-# OpenAI — used to rewrite AWS announcements as editorial drafts
-OPENAI_API_KEY=sk-...
+# Google Gemini — used to rewrite AWS announcements as editorial drafts
+GEMINI_API_KEY=AIza...
 
 # Vercel Cron — random string the cron route checks via Bearer token
 CRON_SECRET=replace-with-a-long-random-string
@@ -237,12 +251,6 @@ CRON_SECRET=replace-with-a-long-random-string
 Generate `CRON_SECRET` with `openssl rand -hex 32` or any random string of
 at least 32 characters. Vercel automatically sends it as
 `Authorization: Bearer ${CRON_SECRET}` to scheduled routes.
-
-### 3. (Recommended) Set a hard OpenAI spend limit
-
-Visit OpenAI dashboard → Billing → Usage limits → set a monthly hard cap
-(e.g. **$5/month**). At gpt-4o-mini pricing this covers hundreds of articles
-and protects against runaway costs from any bug.
 
 ### 4. Deploy — Vercel registers the cron automatically
 
@@ -294,5 +302,8 @@ Wrong/missing token returns 401.
   `src/app/api/cron/aws-news/route.ts` (default 5). Higher values risk the
   60s timeout on Hobby.
 - **Editorial voice**: Tweak the system prompt in
-  `src/lib/openai-rewrite.ts` — the structure (`## What's new` + `## Why it
+  `src/lib/ai-rewrite.ts` — the structure (`## What's new` + `## Why it
   matters`) and word count window are defined there.
+- **Model**: Default is `gemini-1.5-flash` (fastest free option). Swap to
+  `gemini-1.5-pro` in `ai-rewrite.ts` for higher quality at the cost of
+  lower free-tier limits (50 RPD vs 1,500 RPD).

@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { timingSafeEqual } from 'node:crypto';
 import { fetchAwsWhatsNew, normalizeLink } from '@/lib/rss';
-import { rewriteAwsAnnouncement, computeReadTime } from '@/lib/openai-rewrite';
+import { rewriteAwsAnnouncement, computeReadTime } from '@/lib/ai-rewrite';
 import { listExistingDedupKeys, insertDraft } from '@/lib/airtable-posts';
 import { slugify, uniqueSlug } from '@/lib/slugify';
 import { HARDCODED_SLUGS } from '@/lib/posts';
