@@ -85,18 +85,27 @@ export async function POST(request: NextRequest): Promise<NextResponse<Subscript
           );
         }
 
-        // Add new subscriber
-        await base('Newsletter Subscribers').create([
-          {
-            fields: {
-              'Email': subscriberData.email,
-              'Name': subscriberData.name,
-              'Subscribed At': subscriberData.subscribedAt,
-              'Status': subscriberData.status,
-              'Source': subscriberData.source
-            }
-          }
-        ]);
+        // Build the fields payload — only include fields that exist in the
+        // current Airtable schema. Unknown fields would otherwise 422.
+        const fields: Record<string, unknown> = {
+          Email: subscriberData.email,
+          Status: subscriberData.status,
+        };
+        if (subscriberData.name) fields.Name = subscriberData.name;
+
+        // Auto-assign to a collaborator when configured.
+        // The env var holds the Airtable account email of the assignee.
+        const assigneeEmail = process.env.AIRTABLE_NEWSLETTER_ASSIGNEE_EMAIL;
+        if (assigneeEmail) {
+          fields.Assignee = { email: assigneeEmail };
+        }
+
+        await base('Newsletter Subscribers').create(
+          [{ fields }],
+          // typecast lets Airtable coerce/match Single Select options that
+          // already exist, avoiding INVALID_MULTIPLE_CHOICE_OPTIONS errors.
+          { typecast: true },
+        );
         console.log('Newsletter subscriber added to Airtable');
       } catch (airtableError) {
         console.error('Airtable newsletter error:', airtableError);
