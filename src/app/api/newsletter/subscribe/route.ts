@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import Airtable from 'airtable';
+import Airtable, { type FieldSet, type Collaborator } from 'airtable';
 
 // Initialize Airtable (free tier: 1,200 records)
 const initAirtable = () => {
@@ -87,7 +87,7 @@ export async function POST(request: NextRequest): Promise<NextResponse<Subscript
 
         // Build the fields payload — only include fields that exist in the
         // current Airtable schema. Unknown fields would otherwise 422.
-        const fields: Record<string, unknown> = {
+        const fields: FieldSet = {
           Email: subscriberData.email,
           Status: subscriberData.status,
         };
@@ -95,9 +95,11 @@ export async function POST(request: NextRequest): Promise<NextResponse<Subscript
 
         // Auto-assign to a collaborator when configured.
         // The env var holds the Airtable account email of the assignee.
+        // Note: Airtable's TS Collaborator type requires id+name, but the
+        // REST API resolves the user from { email } alone — hence the cast.
         const assigneeEmail = process.env.AIRTABLE_NEWSLETTER_ASSIGNEE_EMAIL;
         if (assigneeEmail) {
-          fields.Assignee = { email: assigneeEmail };
+          fields.Assignee = { email: assigneeEmail } as unknown as Collaborator;
         }
 
         await base('Newsletter Subscribers').create(
