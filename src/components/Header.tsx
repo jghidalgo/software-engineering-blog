@@ -112,10 +112,10 @@ export default function Header() {
       {mobileMenuOpen && (
         <div className="fixed inset-0 z-50 md:hidden">
           <div
-            className="fixed inset-0 bg-secondary-900/40 backdrop-blur-sm"
+            className="fixed inset-0 bg-secondary-950/70 backdrop-blur-sm"
             onClick={() => setMobileMenuOpen(false)}
           />
-          <div className="fixed right-0 top-0 h-full w-full max-w-xs glass-strong p-6 shadow-2xl">
+          <div className="fixed right-0 top-0 h-full w-full max-w-sm bg-white dark:bg-[#0b1220] border-l border-secondary-200/60 dark:border-white/10 p-6 shadow-2xl overflow-y-auto">
             <div className="flex items-center justify-between">
               <Link href="/" className="flex items-center gap-2" onClick={() => setMobileMenuOpen(false)}>
                 <Image
