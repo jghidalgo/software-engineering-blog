@@ -173,13 +173,16 @@ async function runPipeline(): Promise<RunResult> {
       const r = await processSource(source, takenSlugs, dedup.guids, dedup.links, budget);
       sourceResults.push(r);
     } catch (err) {
-      console.error(`[cron/aws-news] [${source}] fatal source error:`, err);
+      // Feed unreachable (404/timeout/etc). One bad feed never kills the run —
+      // we log it and move on to the next source.
+      const message = err instanceof Error ? err.message : String(err);
+      console.warn(`[cron/aws-news] [${source}] feed unreachable, skipping: ${message}`);
       sourceResults.push({
         source,
         processed: 0,
         skipped: 0,
         deferred: 0,
-        errors: [{ guid: '*', message: err instanceof Error ? err.message : String(err) }],
+        errors: [{ guid: '*', message: `feed unreachable: ${message}` }],
       });
     }
   }

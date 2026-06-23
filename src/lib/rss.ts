@@ -50,7 +50,9 @@ export const RSS_SOURCES = {
     category: 'at-scale',
   },
   'uber-eng': {
-    url: 'https://www.uber.com/blog/engineering/rss/',
+    // Uber Engineering's canonical RSS is now the Medium syndication —
+    // the old www.uber.com/blog/engineering/rss/ URL 404s.
+    url: 'https://medium.com/feed/uber-eng',
     label: 'Uber Engineering',
     category: 'at-scale',
   },
