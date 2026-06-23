@@ -233,8 +233,8 @@ Reuse the same Personal Access Token — it already has `data.records:read` and
 3. Click **Create API key** → pick or create a Google Cloud project
 4. Copy the key (starts with `AIza...`)
 
-The free tier on `gemini-1.5-flash` gives you 15 requests/minute,
-1,500/day, and 1M tokens/day — far beyond what a daily cron needs.
+The free tier on `gemini-2.5-flash` gives you generous request and token
+quotas — far beyond what a daily cron needs.
 
 ### 3. Add the new environment variables
 
@@ -304,6 +304,6 @@ Wrong/missing token returns 401.
 - **Editorial voice**: Tweak the system prompt in
   `src/lib/ai-rewrite.ts` — the structure (`## What's new` + `## Why it
   matters`) and word count window are defined there.
-- **Model**: Default is `gemini-1.5-flash` (fastest free option). Swap to
-  `gemini-1.5-pro` in `ai-rewrite.ts` for higher quality at the cost of
-  lower free-tier limits (50 RPD vs 1,500 RPD).
+- **Model**: Default is `gemini-2.5-flash` (fastest free option). Swap to
+  `gemini-2.5-pro` in `ai-rewrite.ts` for higher quality at the cost of
+  tighter free-tier limits.
