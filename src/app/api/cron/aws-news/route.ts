@@ -13,8 +13,14 @@ export const maxDuration = 60;
 export const runtime = 'nodejs';
 
 // Cap per-run, PER SOURCE, to keep total runtime well under the 60s ceiling.
-// With 2 sources this is up to ~6 OpenAI/Airtable round-trips per source.
+// With 2 sources this is up to ~6 AI/Airtable round-trips per source.
 const MAX_ITEMS_PER_SOURCE_PER_RUN = 3;
+
+// Defensive throttle between AI calls — keeps us safely under Gemini's
+// free-tier RPM cap even if Google ever lowers it.
+const INTER_CALL_DELAY_MS = 4000;
+
+const sleep = (ms: number) => new Promise((r) => setTimeout(r, ms));
 
 interface SourceResult {
   source: RssSource;
@@ -61,8 +67,10 @@ async function processSource(
   const batch = newItems.slice(0, MAX_ITEMS_PER_SOURCE_PER_RUN);
   result.skipped = items.length - batch.length;
 
-  for (const item of batch) {
+  for (let i = 0; i < batch.length; i++) {
+    const item = batch[i];
     try {
+      if (i > 0) await sleep(INTER_CALL_DELAY_MS);
       const rewritten = await rewriteAwsAnnouncement(item);
       const baseSlug = slugify(rewritten.suggestedSlug || rewritten.title);
       const slug = uniqueSlug(baseSlug || source, takenSlugs);

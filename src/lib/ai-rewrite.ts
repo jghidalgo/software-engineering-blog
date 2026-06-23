@@ -70,7 +70,9 @@ export async function rewriteAwsAnnouncement(
   ].join('\n');
 
   const model = getClient().getGenerativeModel({
-    model: 'gemini-2.5-flash',
+    // gemini-2.5-flash-lite — free-tier 15 RPM (vs 5 RPM on flash), plenty
+    // of quality for structured rewrites, and faster too.
+    model: 'gemini-2.5-flash-lite',
     systemInstruction: SYSTEM_PROMPT,
     generationConfig: {
       temperature: 0.5,

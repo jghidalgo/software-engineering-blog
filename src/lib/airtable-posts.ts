@@ -157,23 +157,29 @@ export async function listExistingDedupKeys(): Promise<{
 export async function insertDraft(draft: DraftInsert): Promise<string> {
   const base = getBase();
   if (!base) throw new Error('Airtable not configured');
-  const created = await base(TABLE).create([
-    {
-      fields: {
-        slug: draft.slug,
-        title: draft.title,
-        excerpt: draft.excerpt,
-        body: draft.body,
-        tags: draft.tags.join(', '),
-        readTime: draft.readTime,
-        status: 'draft',
-        source: draft.source,
-        sourceUrl: draft.sourceUrl,
-        sourceTitle: draft.sourceTitle,
-        sourceGuid: draft.sourceGuid,
-        sourceLinkNorm: draft.sourceLinkNorm,
+  const created = await base(TABLE).create(
+    [
+      {
+        fields: {
+          slug: draft.slug,
+          title: draft.title,
+          excerpt: draft.excerpt,
+          body: draft.body,
+          tags: draft.tags.join(', '),
+          readTime: draft.readTime,
+          status: 'draft',
+          source: draft.source,
+          sourceUrl: draft.sourceUrl,
+          sourceTitle: draft.sourceTitle,
+          sourceGuid: draft.sourceGuid,
+          sourceLinkNorm: draft.sourceLinkNorm,
+        },
       },
-    },
-  ]);
+    ],
+    // Lets Airtable match Single Select options that already exist (`draft`,
+    // `whats-new`, `aws-blogs`) and auto-create missing ones when the PAT has
+    // Creator-level access. Avoids INVALID_MULTIPLE_CHOICE_OPTIONS errors.
+    { typecast: true },
+  );
   return created[0].id;
 }
