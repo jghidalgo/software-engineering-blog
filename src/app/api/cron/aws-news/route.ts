@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { timingSafeEqual } from 'node:crypto';
-import { fetchAwsWhatsNew, normalizeLink } from '@/lib/rss';
+import { fetchAwsFeed, normalizeLink, RSS_SOURCE_KEYS, type RssSource } from '@/lib/rss';
 import { rewriteAwsAnnouncement, computeReadTime } from '@/lib/ai-rewrite';
 import { listExistingDedupKeys, insertDraft } from '@/lib/airtable-posts';
 import { slugify, uniqueSlug } from '@/lib/slugify';
@@ -12,13 +12,21 @@ export const maxDuration = 60;
 // Run on the Node runtime (Airtable SDK + crypto need Node, not Edge)
 export const runtime = 'nodejs';
 
-// Cap per-run to keep total runtime well under the 60s ceiling
-const MAX_ITEMS_PER_RUN = 5;
+// Cap per-run, PER SOURCE, to keep total runtime well under the 60s ceiling.
+// With 2 sources this is up to ~6 OpenAI/Airtable round-trips per source.
+const MAX_ITEMS_PER_SOURCE_PER_RUN = 3;
 
-interface RunResult {
+interface SourceResult {
+  source: RssSource;
   processed: number;
   skipped: number;
   errors: { guid: string; message: string }[];
+}
+
+interface RunResult {
+  sources: SourceResult[];
+  processed: number;
+  errors: number;
 }
 
 function authorized(req: NextRequest): boolean {
@@ -34,30 +42,30 @@ function authorized(req: NextRequest): boolean {
   }
 }
 
-async function runPipeline(): Promise<RunResult> {
-  const result: RunResult = { processed: 0, skipped: 0, errors: [] };
+async function processSource(
+  source: RssSource,
+  takenSlugs: Set<string>,
+  dedupGuids: Set<string>,
+  dedupLinks: Set<string>,
+): Promise<SourceResult> {
+  const result: SourceResult = { source, processed: 0, skipped: 0, errors: [] };
 
-  const [items, dedup] = await Promise.all([
-    fetchAwsWhatsNew(),
-    listExistingDedupKeys(),
-  ]);
-
+  const items = await fetchAwsFeed(source);
   const newItems = items.filter((item) => {
     const link = normalizeLink(item.link);
-    if (dedup.guids.has(item.guid)) return false;
-    if (link && dedup.links.has(link)) return false;
+    if (dedupGuids.has(item.guid)) return false;
+    if (link && dedupLinks.has(link)) return false;
     return true;
   });
 
-  const takenSlugs = new Set<string>([...HARDCODED_SLUGS, ...dedup.slugs]);
-  const batch = newItems.slice(0, MAX_ITEMS_PER_RUN);
+  const batch = newItems.slice(0, MAX_ITEMS_PER_SOURCE_PER_RUN);
   result.skipped = items.length - batch.length;
 
   for (const item of batch) {
     try {
       const rewritten = await rewriteAwsAnnouncement(item);
       const baseSlug = slugify(rewritten.suggestedSlug || rewritten.title);
-      const slug = uniqueSlug(baseSlug || 'aws-news', takenSlugs);
+      const slug = uniqueSlug(baseSlug || source, takenSlugs);
       takenSlugs.add(slug);
 
       await insertDraft({
@@ -67,21 +75,53 @@ async function runPipeline(): Promise<RunResult> {
         body: rewritten.body,
         tags: rewritten.tags,
         readTime: computeReadTime(rewritten.body),
+        source,
         sourceUrl: item.link,
         sourceTitle: item.title,
         sourceGuid: item.guid,
         sourceLinkNorm: normalizeLink(item.link),
       });
 
+      // Reserve newly-inserted dedup keys so a second source can't dupe them
+      dedupGuids.add(item.guid);
+      dedupLinks.add(normalizeLink(item.link));
       result.processed += 1;
     } catch (err) {
       const message = err instanceof Error ? err.message : String(err);
-      console.error(`[cron/aws-news] item ${item.guid} failed:`, message);
+      console.error(`[cron/aws-news] [${source}] item ${item.guid} failed:`, message);
       result.errors.push({ guid: item.guid, message });
     }
   }
 
   return result;
+}
+
+async function runPipeline(): Promise<RunResult> {
+  const dedup = await listExistingDedupKeys();
+  const takenSlugs = new Set<string>([...HARDCODED_SLUGS, ...dedup.slugs]);
+
+  // Process sources sequentially to predictably stay under maxDuration.
+  const sourceResults: SourceResult[] = [];
+  for (const source of RSS_SOURCE_KEYS) {
+    try {
+      const r = await processSource(source, takenSlugs, dedup.guids, dedup.links);
+      sourceResults.push(r);
+    } catch (err) {
+      console.error(`[cron/aws-news] [${source}] fatal source error:`, err);
+      sourceResults.push({
+        source,
+        processed: 0,
+        skipped: 0,
+        errors: [{ guid: '*', message: err instanceof Error ? err.message : String(err) }],
+      });
+    }
+  }
+
+  return {
+    sources: sourceResults,
+    processed: sourceResults.reduce((sum, s) => sum + s.processed, 0),
+    errors: sourceResults.reduce((sum, s) => sum + s.errors.length, 0),
+  };
 }
 
 export async function GET(request: NextRequest) {

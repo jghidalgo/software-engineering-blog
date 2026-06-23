@@ -9,12 +9,28 @@ export interface AwsRssItem {
   categories: string[];
 }
 
+/**
+ * AWS RSS feeds we draft articles from. The key is stored in the Airtable
+ * `source` field so each page can render only its own pool.
+ */
+export const RSS_SOURCES = {
+  'whats-new': {
+    url: 'https://aws.amazon.com/about-aws/whats-new/recent/feed/',
+    label: "AWS What's New",
+  },
+  'aws-blogs': {
+    url: 'https://aws.amazon.com/blogs/aws/feed/',
+    label: 'AWS News Blog',
+  },
+} as const;
+
+export type RssSource = keyof typeof RSS_SOURCES;
+export const RSS_SOURCE_KEYS = Object.keys(RSS_SOURCES) as RssSource[];
+
 const parser = new Parser<unknown, AwsRssItem>();
 
-const FEED_URL = 'https://aws.amazon.com/about-aws/whats-new/recent/feed/';
-
-export async function fetchAwsWhatsNew(): Promise<AwsRssItem[]> {
-  const feed = await parser.parseURL(FEED_URL);
+export async function fetchAwsFeed(source: RssSource): Promise<AwsRssItem[]> {
+  const feed = await parser.parseURL(RSS_SOURCES[source].url);
   return feed.items
     .map((raw) => {
       const item = raw as unknown as Partial<AwsRssItem> & { isoDate?: string };
@@ -31,8 +47,8 @@ export async function fetchAwsWhatsNew(): Promise<AwsRssItem[]> {
 }
 
 /**
- * Lowercase, strip query string and trailing slash. Used as a fallback dedup key
- * in case AWS ever changes a guid for the same URL.
+ * Lowercase, strip query string and trailing slash. Used as a fallback dedup
+ * key in case AWS ever changes a guid for the same URL.
  */
 export function normalizeLink(url: string): string {
   try {

@@ -12,7 +12,9 @@ export const metadata: Metadata = {
 export const revalidate = 60;
 
 export default async function BlogPage() {
-  const posts = await getAllPosts();
+  // /blog shows hardcoded posts + AI articles sourced from the AWS Blogs feed.
+  // AWS announcement-style posts live on /aws.
+  const posts = await getAllPosts({ source: 'aws-blogs' });
 
   return (
     <div className="py-24 sm:py-32">

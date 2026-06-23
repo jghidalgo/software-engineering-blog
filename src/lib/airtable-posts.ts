@@ -1,4 +1,5 @@
 import Airtable, { type FieldSet, type Records } from 'airtable';
+import type { RssSource } from './rss';
 
 export interface PostRecord {
   id: string;
@@ -9,6 +10,9 @@ export interface PostRecord {
   tags: string[];
   readTime: string;
   status: 'draft' | 'published';
+  /** Which AWS RSS feed this article was generated from. Falls back to
+   *  'whats-new' for legacy rows that pre-date this field. */
+  source: RssSource;
   sourceUrl: string;
   sourceTitle: string;
   sourceGuid: string;
@@ -24,6 +28,7 @@ export interface DraftInsert {
   body: string;
   tags: string[];
   readTime: string;
+  source: RssSource;
   sourceUrl: string;
   sourceTitle: string;
   sourceGuid: string;
@@ -39,27 +44,61 @@ function getBase() {
   return new Airtable({ apiKey: token }).base(baseId);
 }
 
+/**
+ * Case-insensitive field lookup. Airtable's REST API IS case-sensitive on
+ * field names, so `f.title` won't match a field called `Title`. This walks
+ * the keys once and returns whichever variant exists.
+ */
+function pick(f: FieldSet, name: string): unknown {
+  if (f[name] !== undefined && f[name] !== null) return f[name];
+  const lower = name.toLowerCase();
+  for (const k of Object.keys(f)) {
+    if (k.toLowerCase() === lower) {
+      const v = f[k];
+      if (v !== undefined && v !== null) return v;
+    }
+  }
+  return undefined;
+}
+
 function mapRecord(r: Records<FieldSet>[number]): PostRecord {
   const f = r.fields;
-  const tagsRaw = (f.tags as string | undefined) ?? '';
+  const tagsRaw = (pick(f, 'tags') as string | undefined) ?? '';
+  const tagsArr = Array.isArray(pick(f, 'tags'))
+    ? (pick(f, 'tags') as string[]).map(String)
+    : tagsRaw
+        .split(',')
+        .map((t) => t.trim())
+        .filter(Boolean);
+
+  const title = String(pick(f, 'title') ?? '');
+  if (!title) {
+    console.warn(
+      `[airtable-posts] record ${r.id} has empty title. Available fields:`,
+      Object.keys(f),
+    );
+  }
+
+  const rawSource = String(pick(f, 'source') ?? '').trim();
+  const source: RssSource =
+    rawSource === 'aws-blogs' ? 'aws-blogs' : 'whats-new';
+
   return {
     id: r.id,
-    slug: String(f.slug ?? ''),
-    title: String(f.title ?? ''),
-    excerpt: String(f.excerpt ?? ''),
-    body: String(f.body ?? ''),
-    tags: tagsRaw
-      .split(',')
-      .map((t) => t.trim())
-      .filter(Boolean),
-    readTime: String(f.readTime ?? '5 min read'),
-    status: (f.status as 'draft' | 'published') ?? 'draft',
-    sourceUrl: String(f.sourceUrl ?? ''),
-    sourceTitle: String(f.sourceTitle ?? ''),
-    sourceGuid: String(f.sourceGuid ?? ''),
-    sourceLinkNorm: String(f.sourceLinkNorm ?? ''),
-    publishedAt: f.publishedAt ? String(f.publishedAt) : null,
-    createdAt: String(f.createdAt ?? ''),
+    slug: String(pick(f, 'slug') ?? ''),
+    title,
+    excerpt: String(pick(f, 'excerpt') ?? ''),
+    body: String(pick(f, 'body') ?? ''),
+    tags: tagsArr,
+    readTime: String(pick(f, 'readTime') ?? '5 min read'),
+    status: (pick(f, 'status') as 'draft' | 'published') ?? 'draft',
+    source,
+    sourceUrl: String(pick(f, 'sourceUrl') ?? ''),
+    sourceTitle: String(pick(f, 'sourceTitle') ?? ''),
+    sourceGuid: String(pick(f, 'sourceGuid') ?? ''),
+    sourceLinkNorm: String(pick(f, 'sourceLinkNorm') ?? ''),
+    publishedAt: pick(f, 'publishedAt') ? String(pick(f, 'publishedAt')) : null,
+    createdAt: String(pick(f, 'createdAt') ?? ''),
   };
 }
 
@@ -128,6 +167,7 @@ export async function insertDraft(draft: DraftInsert): Promise<string> {
         tags: draft.tags.join(', '),
         readTime: draft.readTime,
         status: 'draft',
+        source: draft.source,
         sourceUrl: draft.sourceUrl,
         sourceTitle: draft.sourceTitle,
         sourceGuid: draft.sourceGuid,

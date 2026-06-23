@@ -34,7 +34,10 @@ const awsServices = [
 ];
 
 export default async function AWSPage() {
-  const awsPosts = await getAllPosts({ tag: 'AWS' });
+  // /aws surfaces AWS-tagged hardcoded posts + AI articles from the
+  // What's New feed (service announcements). Long-form blog articles
+  // live on /blog.
+  const awsPosts = await getAllPosts({ tag: 'AWS', source: 'whats-new' });
   return (
     <div className="relative overflow-hidden">
       {/* Backdrop */}

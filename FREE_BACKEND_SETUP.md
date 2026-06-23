@@ -216,6 +216,8 @@ In the same base used for contact/newsletter, create one more table:
   - `tags` — Long text (comma-separated)
   - `readTime` — Single line text
   - `status` — Single select with options `draft`, `published` (default `draft`)
+  - `source` — Single select with options `whats-new`, `aws-blogs`
+    (which AWS RSS feed the article came from; routes drafts to the right page)
   - `sourceUrl` — URL
   - `sourceTitle` — Single line text
   - `sourceGuid` — Single line text (primary dedup key)

@@ -4,6 +4,7 @@ import {
   findPublishedBySlug,
   type PostRecord,
 } from './airtable-posts';
+import type { RssSource } from './rss';
 
 /**
  * The unified blog post shape — extends BlogCard's BlogPost with an optional
@@ -12,7 +13,8 @@ import {
  */
 export interface UnifiedPost extends BlogPost {
   href: string;
-  source: 'hardcoded' | 'news';
+  /** 'hardcoded' for hand-written posts, or the RssSource for AI drafts. */
+  source: 'hardcoded' | RssSource;
 }
 
 /**
@@ -141,7 +143,7 @@ function recordToPost(r: PostRecord): UnifiedPost {
     readTime: r.readTime,
     featured: false,
     href: `/blog/news/${r.slug}`,
-    source: 'news',
+    source: r.source,
   };
 }
 
@@ -152,6 +154,10 @@ function hardcodedToUnified(p: BlogPost): UnifiedPost {
 interface PostQuery {
   tag?: string;
   limit?: number;
+  /** Filter by source. 'hardcoded' for hand-written, an RssSource for AI.
+   *  When provided, hardcoded posts are still kept ONLY if they pass the tag
+   *  filter — letting /blog and /aws show curated content alongside AI drafts. */
+  source?: 'hardcoded' | RssSource;
 }
 
 /**
@@ -171,9 +177,20 @@ export async function getAllPosts(query: PostQuery = {}): Promise<UnifiedPost[]>
     ...news.map(recordToPost),
   ];
 
+  // Drop posts with no real title (e.g. published Airtable rows that haven't
+  // had their AI-generated fields filled in yet). They'd render as empty
+  // cards and would otherwise dominate the hero slot.
+  merged = merged.filter((p) => p.title.trim().length > 0);
+
   if (query.tag) {
     const needle = query.tag.toLowerCase();
     merged = merged.filter((p) => p.tags.some((t) => t.toLowerCase() === needle));
+  }
+
+  if (query.source) {
+    // Hardcoded posts are always included — they're hand-curated and belong
+    // on every page that filters by source.
+    merged = merged.filter((p) => p.source === 'hardcoded' || p.source === query.source);
   }
 
   merged.sort((a, b) => (a.date < b.date ? 1 : -1));
