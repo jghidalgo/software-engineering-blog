@@ -5,13 +5,14 @@ import Link from 'next/link';
 import Image from 'next/image';
 import { usePathname } from 'next/navigation';
 import { Bars3Icon, XMarkIcon } from '@heroicons/react/24/outline';
-import { CloudIcon, BookOpenIcon, CodeBracketIcon } from '@heroicons/react/24/solid';
+import { CloudIcon, BookOpenIcon, CodeBracketIcon, CpuChipIcon } from '@heroicons/react/24/solid';
 import ThemeToggle from './ThemeToggle';
 
 const navigation = [
   { name: 'Home', href: '/', icon: BookOpenIcon },
   { name: 'Blog', href: '/blog', icon: CodeBracketIcon },
   { name: 'AWS', href: '/aws', icon: CloudIcon },
+  { name: 'Engineering', href: '/engineering', icon: CpuChipIcon },
   { name: 'About', href: '/about', icon: null },
 ];
 

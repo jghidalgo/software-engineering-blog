@@ -9,23 +9,92 @@ export interface AwsRssItem {
   categories: string[];
 }
 
+/** Top-level groupings used to route posts to the right page. */
+export type SourceCategory = 'aws' | 'at-scale' | 'web-platform' | 'industry';
+
+interface SourceConfig {
+  url: string;
+  label: string;
+  category: SourceCategory;
+}
+
 /**
- * AWS RSS feeds we draft articles from. The key is stored in the Airtable
- * `source` field so each page can render only its own pool.
+ * All RSS feeds we generate editorial summaries from.
+ *
+ * Order matters — see `PRIORITY_ORDER` in the cron route. AWS sources are
+ * always processed first, then big tech, web platform, and industry feeds
+ * fill remaining time budget on each cron run.
  */
 export const RSS_SOURCES = {
+  // ── AWS (highest priority) ──────────────────────────────────────────────
   'whats-new': {
     url: 'https://aws.amazon.com/about-aws/whats-new/recent/feed/',
     label: "AWS What's New",
+    category: 'aws',
   },
   'aws-blogs': {
     url: 'https://aws.amazon.com/blogs/aws/feed/',
     label: 'AWS News Blog',
+    category: 'aws',
   },
-} as const;
+
+  // ── Engineering at scale ────────────────────────────────────────────────
+  'netflix-tech': {
+    url: 'https://netflixtechblog.com/feed',
+    label: 'Netflix Tech Blog',
+    category: 'at-scale',
+  },
+  'pragmatic-eng': {
+    url: 'https://blog.pragmaticengineer.com/rss/',
+    label: 'The Pragmatic Engineer',
+    category: 'at-scale',
+  },
+  'uber-eng': {
+    url: 'https://www.uber.com/blog/engineering/rss/',
+    label: 'Uber Engineering',
+    category: 'at-scale',
+  },
+  'meta-eng': {
+    url: 'https://engineering.fb.com/feed/',
+    label: 'Meta Engineering',
+    category: 'at-scale',
+  },
+
+  // ── Web platform ────────────────────────────────────────────────────────
+  'react-blog': {
+    url: 'https://react.dev/rss.xml',
+    label: 'React Blog',
+    category: 'web-platform',
+  },
+  'web-dev': {
+    url: 'https://web.dev/feed.xml',
+    label: 'web.dev',
+    category: 'web-platform',
+  },
+
+  // ── Industry / signal ──────────────────────────────────────────────────
+  'github-blog': {
+    url: 'https://github.blog/feed/',
+    label: 'GitHub Blog',
+    category: 'industry',
+  },
+  'hn-100': {
+    url: 'https://hnrss.org/frontpage?points=100',
+    label: 'Hacker News (100+ points)',
+    category: 'industry',
+  },
+} as const satisfies Record<string, SourceConfig>;
 
 export type RssSource = keyof typeof RSS_SOURCES;
 export const RSS_SOURCE_KEYS = Object.keys(RSS_SOURCES) as RssSource[];
+
+export function categoryFor(source: RssSource): SourceCategory {
+  return RSS_SOURCES[source].category;
+}
+
+export function labelFor(source: RssSource): string {
+  return RSS_SOURCES[source].label;
+}
 
 const parser = new Parser<unknown, AwsRssItem>();
 
@@ -48,7 +117,7 @@ export async function fetchAwsFeed(source: RssSource): Promise<AwsRssItem[]> {
 
 /**
  * Lowercase, strip query string and trailing slash. Used as a fallback dedup
- * key in case AWS ever changes a guid for the same URL.
+ * key in case the source ever changes a guid for the same URL.
  */
 export function normalizeLink(url: string): string {
   try {
@@ -61,7 +130,7 @@ export function normalizeLink(url: string): string {
 
 /**
  * Remove HTML tags and decode common entities. Defense against prompt-injection
- * in the AWS RSS body before sending to the LLM.
+ * in feed bodies before sending to the LLM.
  */
 export function stripHtml(input: string): string {
   return input

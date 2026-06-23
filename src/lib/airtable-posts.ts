@@ -1,5 +1,5 @@
 import Airtable, { type FieldSet, type Records } from 'airtable';
-import type { RssSource } from './rss';
+import { RSS_SOURCE_KEYS, type RssSource } from './rss';
 
 export interface PostRecord {
   id: string;
@@ -79,9 +79,12 @@ function mapRecord(r: Records<FieldSet>[number]): PostRecord {
     );
   }
 
+  // Validate against the full RssSource union — unknown values fall back to
+  // 'whats-new' so legacy rows that pre-date the field stay routed to /aws.
   const rawSource = String(pick(f, 'source') ?? '').trim();
-  const source: RssSource =
-    rawSource === 'aws-blogs' ? 'aws-blogs' : 'whats-new';
+  const source: RssSource = (RSS_SOURCE_KEYS as readonly string[]).includes(rawSource)
+    ? (rawSource as RssSource)
+    : 'whats-new';
 
   return {
     id: r.id,

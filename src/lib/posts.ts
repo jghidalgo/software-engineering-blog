@@ -4,7 +4,7 @@ import {
   findPublishedBySlug,
   type PostRecord,
 } from './airtable-posts';
-import type { RssSource } from './rss';
+import { categoryFor, type RssSource, type SourceCategory } from './rss';
 
 /**
  * The unified blog post shape — extends BlogCard's BlogPost with an optional
@@ -154,10 +154,10 @@ function hardcodedToUnified(p: BlogPost): UnifiedPost {
 interface PostQuery {
   tag?: string;
   limit?: number;
-  /** Filter by source. 'hardcoded' for hand-written, an RssSource for AI.
-   *  When provided, hardcoded posts are still kept ONLY if they pass the tag
-   *  filter — letting /blog and /aws show curated content alongside AI drafts. */
+  /** Filter by a specific RSS source key (e.g. 'whats-new', 'aws-blogs'). */
   source?: 'hardcoded' | RssSource;
+  /** Filter by source category — used by /engineering with its sub-tabs. */
+  category?: SourceCategory;
 }
 
 /**
@@ -193,6 +193,14 @@ export async function getAllPosts(query: PostQuery = {}): Promise<UnifiedPost[]>
     // on the home page (which doesn't pass a source filter) and via their
     // own direct URLs.
     merged = merged.filter((p) => p.source === query.source);
+  }
+
+  if (query.category) {
+    // Category filter — used by /engineering tabs. Hardcoded posts have no
+    // RSS category so they're always excluded here.
+    merged = merged.filter(
+      (p) => p.source !== 'hardcoded' && categoryFor(p.source) === query.category,
+    );
   }
 
   merged.sort((a, b) => (a.date < b.date ? 1 : -1));

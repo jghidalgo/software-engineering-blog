@@ -216,8 +216,11 @@ In the same base used for contact/newsletter, create one more table:
   - `tags` — Long text (comma-separated)
   - `readTime` — Single line text
   - `status` — Single select with options `draft`, `published` (default `draft`)
-  - `source` — Single select with options `whats-new`, `aws-blogs`
-    (which AWS RSS feed the article came from; routes drafts to the right page)
+  - `source` — Single select. Add **all** of these options so cron writes don't 422:
+    - **AWS (high priority, /aws and /blog):** `whats-new`, `aws-blogs`
+    - **Engineering at Scale (/engineering?category=at-scale):** `netflix-tech`, `pragmatic-eng`, `uber-eng`, `meta-eng`
+    - **Web Platform (/engineering?category=web-platform):** `react-blog`, `web-dev`
+    - **Industry (/engineering?category=industry):** `github-blog`, `hn-100`
   - `sourceUrl` — URL
   - `sourceTitle` — Single line text
   - `sourceGuid` — Single line text (primary dedup key)

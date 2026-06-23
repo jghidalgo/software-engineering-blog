@@ -12,13 +12,35 @@ export const maxDuration = 60;
 // Run on the Node runtime (Airtable SDK + crypto need Node, not Edge)
 export const runtime = 'nodejs';
 
-// Cap per-run, PER SOURCE, to keep total runtime well under the 60s ceiling.
-// With 2 sources this is up to ~6 AI/Airtable round-trips per source.
-const MAX_ITEMS_PER_SOURCE_PER_RUN = 3;
+/**
+ * Per-source item caps. AWS sources get the lion's share because the blog's
+ * mission is AWS-first; other sources fill remaining time budget.
+ */
+const ITEMS_PER_SOURCE: Record<RssSource, number> = {
+  // AWS — highest priority, generous cap
+  'whats-new': 3,
+  'aws-blogs': 3,
+  // Big tech eng — secondary, lighter cap
+  'netflix-tech': 1,
+  'pragmatic-eng': 1,
+  'uber-eng': 1,
+  'meta-eng': 1,
+  // Web platform
+  'react-blog': 1,
+  'web-dev': 1,
+  // Industry / signal
+  'github-blog': 1,
+  'hn-100': 1,
+};
 
-// Defensive throttle between AI calls — keeps us safely under Gemini's
-// free-tier RPM cap even if Google ever lowers it.
+// Defensive throttle between AI calls — keeps us under Gemini's free-tier
+// 15 RPM cap with comfortable headroom.
 const INTER_CALL_DELAY_MS = 4000;
+
+// Stop scheduling new AI calls once elapsed exceeds this. The remaining
+// budget is preserved for in-flight work + response serialization, keeping
+// the whole run safely under Vercel Hobby's 60s ceiling.
+const TIME_BUDGET_MS = 45_000;
 
 const sleep = (ms: number) => new Promise((r) => setTimeout(r, ms));
 
@@ -26,6 +48,8 @@ interface SourceResult {
   source: RssSource;
   processed: number;
   skipped: number;
+  /** Items deferred to a later run because the time budget was used up. */
+  deferred: number;
   errors: { guid: string; message: string }[];
 }
 
@@ -33,6 +57,8 @@ interface RunResult {
   sources: SourceResult[];
   processed: number;
   errors: number;
+  budgetExhausted: boolean;
+  elapsedMs: number;
 }
 
 function authorized(req: NextRequest): boolean {
@@ -53,8 +79,15 @@ async function processSource(
   takenSlugs: Set<string>,
   dedupGuids: Set<string>,
   dedupLinks: Set<string>,
+  budget: { startedAt: number; reached: boolean },
 ): Promise<SourceResult> {
-  const result: SourceResult = { source, processed: 0, skipped: 0, errors: [] };
+  const result: SourceResult = {
+    source,
+    processed: 0,
+    skipped: 0,
+    deferred: 0,
+    errors: [],
+  };
 
   const items = await fetchAwsFeed(source);
   const newItems = items.filter((item) => {
@@ -64,10 +97,19 @@ async function processSource(
     return true;
   });
 
-  const batch = newItems.slice(0, MAX_ITEMS_PER_SOURCE_PER_RUN);
+  const cap = ITEMS_PER_SOURCE[source] ?? 1;
+  const batch = newItems.slice(0, cap);
   result.skipped = items.length - batch.length;
 
   for (let i = 0; i < batch.length; i++) {
+    // Stop scheduling more AI calls if the budget is reached. Remaining items
+    // come back as "deferred" rather than errors.
+    if (Date.now() - budget.startedAt > TIME_BUDGET_MS) {
+      budget.reached = true;
+      result.deferred = batch.length - i;
+      break;
+    }
+
     const item = batch[i];
     try {
       if (i > 0) await sleep(INTER_CALL_DELAY_MS);
@@ -90,7 +132,6 @@ async function processSource(
         sourceLinkNorm: normalizeLink(item.link),
       });
 
-      // Reserve newly-inserted dedup keys so a second source can't dupe them
       dedupGuids.add(item.guid);
       dedupLinks.add(normalizeLink(item.link));
       result.processed += 1;
@@ -105,14 +146,31 @@ async function processSource(
 }
 
 async function runPipeline(): Promise<RunResult> {
+  const startedAt = Date.now();
+  const budget = { startedAt, reached: false };
+
   const dedup = await listExistingDedupKeys();
   const takenSlugs = new Set<string>([...HARDCODED_SLUGS, ...dedup.slugs]);
 
-  // Process sources sequentially to predictably stay under maxDuration.
+  // RSS_SOURCE_KEYS is already in priority order (AWS sources first — see
+  // src/lib/rss.ts). The time budget naturally lets AWS run first and fills
+  // remaining slots with secondary feeds.
   const sourceResults: SourceResult[] = [];
   for (const source of RSS_SOURCE_KEYS) {
+    if (budget.reached) {
+      // Record the remaining sources as fully deferred so the response
+      // explains why they didn't run.
+      sourceResults.push({
+        source,
+        processed: 0,
+        skipped: 0,
+        deferred: ITEMS_PER_SOURCE[source] ?? 1,
+        errors: [],
+      });
+      continue;
+    }
     try {
-      const r = await processSource(source, takenSlugs, dedup.guids, dedup.links);
+      const r = await processSource(source, takenSlugs, dedup.guids, dedup.links, budget);
       sourceResults.push(r);
     } catch (err) {
       console.error(`[cron/aws-news] [${source}] fatal source error:`, err);
@@ -120,6 +178,7 @@ async function runPipeline(): Promise<RunResult> {
         source,
         processed: 0,
         skipped: 0,
+        deferred: 0,
         errors: [{ guid: '*', message: err instanceof Error ? err.message : String(err) }],
       });
     }
@@ -129,6 +188,8 @@ async function runPipeline(): Promise<RunResult> {
     sources: sourceResults,
     processed: sourceResults.reduce((sum, s) => sum + s.processed, 0),
     errors: sourceResults.reduce((sum, s) => sum + s.errors.length, 0),
+    budgetExhausted: budget.reached,
+    elapsedMs: Date.now() - startedAt,
   };
 }
 
