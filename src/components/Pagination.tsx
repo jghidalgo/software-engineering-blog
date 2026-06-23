@@ -71,6 +71,7 @@ export default function Pagination({
       ) : (
         <Link
           href={pageHref(basePath, currentPage - 1, extraParams)}
+          scroll={false}
           className={`${baseLinkClass} gap-1`}
           aria-label="Previous page"
         >
@@ -93,7 +94,7 @@ export default function Pagination({
             {p}
           </span>
         ) : (
-          <Link key={p} href={pageHref(basePath, p, extraParams)} className={baseLinkClass}>
+          <Link key={p} href={pageHref(basePath, p, extraParams)} scroll={false} className={baseLinkClass}>
             {p}
           </Link>
         ),
@@ -107,6 +108,7 @@ export default function Pagination({
       ) : (
         <Link
           href={pageHref(basePath, currentPage + 1, extraParams)}
+          scroll={false}
           className={`${baseLinkClass} gap-1`}
           aria-label="Next page"
         >

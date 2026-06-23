@@ -1,3 +1,4 @@
+import Link from 'next/link';
 import { Metadata } from 'next';
 import BlogCard from '@/components/BlogCard';
 import Reveal from '@/components/Reveal';
@@ -31,14 +32,14 @@ interface AWSPageProps {
 }
 
 const awsServices = [
-  { name: 'Lambda',       category: 'Compute',     desc: 'Run code without managing servers', Icon: LambdaIcon },
-  { name: 'EC2',          category: 'Compute',     desc: 'Virtual servers in the cloud',      Icon: EC2Icon },
-  { name: 'S3',           category: 'Storage',     desc: 'Scalable object storage',           Icon: S3Icon },
-  { name: 'DynamoDB',     category: 'Database',    desc: 'Managed NoSQL at any scale',        Icon: DynamoDBIcon },
-  { name: 'API Gateway',  category: 'Networking',  desc: 'Create, deploy and manage APIs',    Icon: ApiGatewayIcon },
-  { name: 'VPC',          category: 'Networking',  desc: 'Isolated cloud networks',           Icon: VPCIcon },
-  { name: 'IAM',          category: 'Security',    desc: 'Identity & access management',      Icon: IAMIcon },
-  { name: 'CloudWatch',   category: 'Management',  desc: 'Observability & telemetry',         Icon: CloudWatchIcon },
+  { name: 'Lambda',       category: 'Compute',     desc: 'Run code without managing servers', Icon: LambdaIcon,     tag: 'lambda' },
+  { name: 'EC2',          category: 'Compute',     desc: 'Virtual servers in the cloud',      Icon: EC2Icon,        tag: 'ec2' },
+  { name: 'S3',           category: 'Storage',     desc: 'Scalable object storage',           Icon: S3Icon,         tag: 's3' },
+  { name: 'DynamoDB',     category: 'Database',    desc: 'Managed NoSQL at any scale',        Icon: DynamoDBIcon,   tag: 'dynamodb' },
+  { name: 'API Gateway',  category: 'Networking',  desc: 'Create, deploy and manage APIs',    Icon: ApiGatewayIcon, tag: 'api-gateway' },
+  { name: 'VPC',          category: 'Networking',  desc: 'Isolated cloud networks',           Icon: VPCIcon,        tag: 'vpc' },
+  { name: 'IAM',          category: 'Security',    desc: 'Identity & access management',      Icon: IAMIcon,        tag: 'iam' },
+  { name: 'CloudWatch',   category: 'Management',  desc: 'Observability & telemetry',         Icon: CloudWatchIcon, tag: 'cloudwatch' },
 ];
 
 export default async function AWSPage({ searchParams }: AWSPageProps) {
@@ -107,34 +108,51 @@ export default async function AWSPage({ searchParams }: AWSPageProps) {
           </div>
 
           <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-4">
-            {awsServices.map((service, i) => (
-              <Reveal
-                key={service.name}
-                delay={Math.min(i * 60, 360)}
-                className="group relative overflow-hidden rounded-2xl border border-secondary-200/70 dark:border-white/10 bg-white/70 dark:bg-white/[0.03] p-5 backdrop-blur-sm shadow-card transition-all duration-300 hover:-translate-y-1 hover:shadow-card-hover"
-              >
-                <div className="flex items-start gap-3">
-                  <service.Icon className="h-12 w-12 shrink-0 drop-shadow-sm transition-transform duration-300 group-hover:scale-110" />
-                  <div className="min-w-0">
-                    <p className="text-[10px] font-semibold uppercase tracking-wider text-secondary-500 dark:text-secondary-400">
-                      {service.category}
-                    </p>
-                    <p className="text-base font-semibold text-secondary-900 dark:text-white">
-                      {service.name}
-                    </p>
+            {awsServices.map((service, i) => {
+              const active = tagFilter === service.tag;
+              return (
+                <Reveal
+                  key={service.name}
+                  delay={Math.min(i * 60, 360)}
+                  className={`group relative overflow-hidden rounded-2xl border p-5 backdrop-blur-sm shadow-card transition-all duration-300 hover:-translate-y-1 hover:shadow-card-hover ${
+                    active
+                      ? 'border-aws-smile/60 bg-aws-smile/5 dark:bg-aws-smile/10 ring-2 ring-aws-smile/30'
+                      : 'border-secondary-200/70 dark:border-white/10 bg-white/70 dark:bg-white/[0.03]'
+                  }`}
+                >
+                  <Link
+                    href={`/aws?tag=${service.tag}#articles`}
+                    className="absolute inset-0 z-10"
+                    aria-label={`Filter articles by ${service.name}`}
+                  />
+                  <div className="flex items-start gap-3">
+                    <service.Icon className="h-12 w-12 shrink-0 drop-shadow-sm transition-transform duration-300 group-hover:scale-110" />
+                    <div className="min-w-0">
+                      <p className="text-[10px] font-semibold uppercase tracking-wider text-secondary-500 dark:text-secondary-400">
+                        {service.category}
+                      </p>
+                      <p className="text-base font-semibold text-secondary-900 dark:text-white">
+                        {service.name}
+                      </p>
+                    </div>
                   </div>
-                </div>
-                <p className="mt-3 text-xs leading-relaxed text-secondary-600 dark:text-secondary-300">
-                  {service.desc}
-                </p>
-              </Reveal>
-            ))}
+                  <p className="mt-3 text-xs leading-relaxed text-secondary-600 dark:text-secondary-300">
+                    {service.desc}
+                  </p>
+                  {active && (
+                    <span className="absolute right-3 top-3 inline-flex items-center gap-1 rounded-full bg-aws-smile px-2 py-0.5 text-[10px] font-bold uppercase tracking-wider text-secondary-900">
+                      Active
+                    </span>
+                  )}
+                </Reveal>
+              );
+            })}
           </div>
         </Reveal>
 
         {/* Articles */}
-        <Reveal className="mt-24" delay={100}>
-          <div className="mb-10">
+        <Reveal className="mt-24 scroll-mt-24" delay={100}>
+          <div id="articles" className="mb-10">
             <p className="text-xs font-semibold uppercase tracking-[0.16em] text-aws-smile">
               Reading list
             </p>
