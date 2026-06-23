@@ -2,8 +2,8 @@ import { Metadata } from 'next';
 import { CodeBracketIcon, CloudIcon, AcademicCapIcon, RocketLaunchIcon } from '@heroicons/react/24/outline';
 
 export const metadata: Metadata = {
-  title: 'About - DevBlog',
-  description: 'Learn about DevBlog and our mission to share knowledge about software engineering and AWS cloud technologies.',
+  title: 'About - AWS Mindset Blog',
+  description: 'Learn about AWS Mindset Blog and our mission to share knowledge about software engineering and AWS cloud technologies.',
 };
 
 const stats = [
@@ -16,17 +16,17 @@ const stats = [
 const skills = [
   {
     category: 'Frontend',
-    technologies: ['React', 'Next.js', 'TypeScript', 'Tailwind CSS', 'Vue.js'],
+    technologies: ['React', 'Next.js', 'TypeScript', 'Tailwind CSS', 'Material UI'],
     icon: CodeBracketIcon,
   },
   {
     category: 'Backend',
-    technologies: ['Node.js', 'Python', 'Java', 'Go', 'PostgreSQL', 'MongoDB'],
+    technologies: ['Node.js', 'Python', , 'PostgreSQL', 'MongoDB', 'GraphQL', 'REST APIs'],
     icon: RocketLaunchIcon,
   },
   {
     category: 'AWS Services',
-    technologies: ['Lambda', 'EC2', 'S3', 'RDS', 'API Gateway', 'CloudFormation'],
+    technologies: ['Lambda', 'EC2', 'S3', 'RDS', 'API Gateway', 'CloudFormation', 'DynamoDB', 'CloudWatch'],
     icon: CloudIcon,
   },
   {
@@ -43,10 +43,10 @@ export default function AboutPage() {
         {/* Header */}
         <div className="mx-auto max-w-2xl lg:text-center mb-16">
           <h1 className="text-4xl font-bold tracking-tight text-secondary-900 dark:text-white sm:text-5xl">
-            About DevBlog
+            About AWS Mindset Blog
           </h1>
           <p className="mt-6 text-lg leading-8 text-secondary-600 dark:text-secondary-300">
-            Welcome to DevBlog, where we explore the ever-evolving world of software engineering 
+            Welcome to AWS Mindset Blog, where we explore the ever evolving world of software engineering 
             with a special focus on AWS cloud technologies and modern development practices.
           </p>
         </div>
@@ -64,7 +64,7 @@ export default function AboutPage() {
             </p>
             <p className="text-lg text-secondary-700 dark:text-secondary-300">
               Whether you&apos;re a seasoned architect or just starting your cloud journey, our content is 
-              designed to provide actionable insights, real-world examples, and best practices that 
+              designed to provide actionable insights, real world examples, and best practices that 
               you can immediately apply to your projects.
             </p>
           </div>

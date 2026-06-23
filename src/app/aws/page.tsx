@@ -1,7 +1,9 @@
 import { Metadata } from 'next';
 import BlogCard from '@/components/BlogCard';
 import Reveal from '@/components/Reveal';
-import { getAllPosts } from '@/lib/posts';
+import Pagination from '@/components/Pagination';
+import TagFilter from '@/components/TagFilter';
+import { getAllPosts, topTags } from '@/lib/posts';
 import {
   AwsSmileLogo,
   LambdaIcon,
@@ -22,6 +24,12 @@ export const metadata: Metadata = {
 // ISR — re-fetch Airtable at most once a minute
 export const revalidate = 60;
 
+const PAGE_SIZE = 9;
+
+interface AWSPageProps {
+  searchParams: Promise<{ page?: string; tag?: string }>;
+}
+
 const awsServices = [
   { name: 'Lambda',       category: 'Compute',     desc: 'Run code without managing servers', Icon: LambdaIcon },
   { name: 'EC2',          category: 'Compute',     desc: 'Virtual servers in the cloud',      Icon: EC2Icon },
@@ -33,11 +41,28 @@ const awsServices = [
   { name: 'CloudWatch',   category: 'Management',  desc: 'Observability & telemetry',         Icon: CloudWatchIcon },
 ];
 
-export default async function AWSPage() {
-  // /aws surfaces AWS-tagged hardcoded posts + AI articles from the
-  // What's New feed (service announcements). Long-form blog articles
-  // live on /blog.
-  const awsPosts = await getAllPosts({ tag: 'AWS', source: 'whats-new' });
+export default async function AWSPage({ searchParams }: AWSPageProps) {
+  const { page, tag } = await searchParams;
+  const requested = Math.max(1, parseInt(page ?? '1', 10) || 1);
+  const tagFilter = tag?.trim().toLowerCase() || null;
+
+  // /aws shows ONLY Airtable posts sourced from the AWS What's New feed
+  // (service announcements). Long-form blog articles live on /blog.
+  const allPosts = await getAllPosts({ source: 'whats-new' });
+
+  // Tag options computed from the FULL pool so pills stay stable as the user
+  // drills in and out of filters.
+  const tagOptions = topTags(allPosts);
+
+  const filtered = tagFilter
+    ? allPosts.filter((p) => p.tags.some((t) => t.toLowerCase() === tagFilter))
+    : allPosts;
+
+  const totalPages = Math.max(1, Math.ceil(filtered.length / PAGE_SIZE));
+  const currentPage = Math.min(requested, totalPages);
+  const start = (currentPage - 1) * PAGE_SIZE;
+  const awsPosts = filtered.slice(start, start + PAGE_SIZE);
+
   return (
     <div className="relative overflow-hidden">
       {/* Backdrop */}
@@ -117,17 +142,38 @@ export default async function AWSPage() {
               Latest AWS articles
             </h2>
           </div>
-          <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
-            {awsPosts.map((post, i) => (
-              <Reveal
-                key={post.slug}
-                delay={Math.min(i * 70, 350)}
-                className="h-full"
-              >
-                <BlogCard post={post} href={post.href} />
-              </Reveal>
-            ))}
-          </div>
+
+          <TagFilter tags={tagOptions} currentTag={tagFilter} basePath="/aws" />
+
+          {awsPosts.length === 0 ? (
+            <div className="mx-auto max-w-md text-center rounded-2xl border border-secondary-200/70 dark:border-white/10 bg-white/60 dark:bg-white/[0.04] px-6 py-16 backdrop-blur">
+              <p className="text-base text-secondary-600 dark:text-secondary-300">
+                {tagFilter
+                  ? `No announcements tagged "${tagFilter}" yet.`
+                  : 'No published announcements yet. New drafts arrive daily — review them in Airtable to publish.'}
+              </p>
+            </div>
+          ) : (
+            <>
+              <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
+                {awsPosts.map((post, i) => (
+                  <Reveal
+                    key={post.slug}
+                    delay={Math.min(i * 70, 350)}
+                    className="h-full"
+                  >
+                    <BlogCard post={post} href={post.href} />
+                  </Reveal>
+                ))}
+              </div>
+              <Pagination
+                currentPage={currentPage}
+                totalPages={totalPages}
+                basePath="/aws"
+                extraParams={tagFilter ? { tag: tagFilter } : undefined}
+              />
+            </>
+          )}
         </Reveal>
       </div>
     </div>

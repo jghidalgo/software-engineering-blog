@@ -90,7 +90,7 @@ export default function Footer() {
               </span>
             </Link>
             <p className="mt-4 max-w-sm text-sm leading-relaxed text-secondary-400">
-              A personal field journal on Amazon Web Services — fresh launches, real-world
+              A personal field journal on Amazon Web Services fresh launches, real-world
               architectures, and the engineering trade-offs behind them.
             </p>
 

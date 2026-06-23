@@ -13,7 +13,7 @@ const contactInfo = [
   {
     name: 'Phone',
     description: 'Call us for urgent matters',
-    contact: '+1 (555) 123-4567',
+    contact: '+1 (786) 529-0117',
     icon: PhoneIcon,
   },
   {

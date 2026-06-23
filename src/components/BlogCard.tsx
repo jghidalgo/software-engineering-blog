@@ -5,6 +5,27 @@ import Badge from './ui/Badge';
 import Spotlight from './Spotlight';
 import { gradientFromSlug } from '@/lib/gradientFromSlug';
 
+/**
+ * Extract a plain-text preview from a markdown body — for the hero card so
+ * it doesn't look half-empty when the excerpt is short. Strips headings,
+ * inline formatting, links and bullets, then returns the first paragraph.
+ */
+function previewFromContent(content: string, max = 260): string {
+  if (!content) return '';
+  const plain = content
+    .replace(/```[\s\S]*?```/g, ' ')
+    .replace(/^#{1,6}\s+.+$/gm, '')
+    .replace(/\*\*?(.+?)\*\*?/g, '$1')
+    .replace(/\[(.+?)\]\((?:.+?)\)/g, '$1')
+    .replace(/`(.+?)`/g, '$1')
+    .replace(/^\s*[-*+>]\s+/gm, '')
+    .replace(/\n{2,}/g, '\n\n')
+    .trim();
+  const firstPara = plain.split(/\n\n/).find((p) => p.trim().length > 0)?.trim() ?? '';
+  if (firstPara.length <= max) return firstPara;
+  return firstPara.slice(0, max).replace(/\s+\S*$/, '') + '…';
+}
+
 export interface BlogPost {
   slug: string;
   title: string;
@@ -47,7 +68,7 @@ export default function BlogCard({
       {/* Cover with abstract gradient */}
       <div
         className={`relative w-full overflow-hidden ${
-          isHero ? 'h-56 sm:h-64' : 'h-32'
+          isHero ? 'h-40 sm:h-44' : 'h-32'
         }`}
         style={{ background: grad.css }}
       >
@@ -116,12 +137,18 @@ export default function BlogCard({
         </h3>
 
         <p
-          className={`mt-3 text-sm leading-relaxed text-secondary-600 dark:text-secondary-300 line-clamp-3 ${
-            isHero ? 'sm:text-base' : ''
+          className={`mt-3 leading-relaxed text-secondary-600 dark:text-secondary-300 ${
+            isHero ? 'text-base sm:text-lg line-clamp-4' : 'text-sm line-clamp-3'
           }`}
         >
           {post.excerpt}
         </p>
+
+        {isHero && post.content && (
+          <p className="mt-4 text-sm leading-relaxed text-secondary-500 dark:text-secondary-400 line-clamp-4 border-l-2 border-primary-500/40 dark:border-primary-400/30 pl-4">
+            {previewFromContent(post.content)}
+          </p>
+        )}
 
         <div className="mt-auto flex items-end justify-between gap-4 pt-5">
           <div className="flex flex-wrap gap-1.5">

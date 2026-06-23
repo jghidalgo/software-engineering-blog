@@ -188,14 +188,45 @@ export async function getAllPosts(query: PostQuery = {}): Promise<UnifiedPost[]>
   }
 
   if (query.source) {
-    // Hardcoded posts are always included — they're hand-curated and belong
-    // on every page that filters by source.
-    merged = merged.filter((p) => p.source === 'hardcoded' || p.source === query.source);
+    // Strict source filter — used by /blog and /aws which now show ONLY
+    // Airtable-sourced posts for that feed. Hardcoded posts remain visible
+    // on the home page (which doesn't pass a source filter) and via their
+    // own direct URLs.
+    merged = merged.filter((p) => p.source === query.source);
   }
 
   merged.sort((a, b) => (a.date < b.date ? 1 : -1));
 
   return query.limit ? merged.slice(0, query.limit) : merged;
+}
+
+export interface TagCount {
+  /** Original casing of the first occurrence, used for display. */
+  name: string;
+  /** Lowercase key — used in the URL and for case-insensitive matching. */
+  key: string;
+  count: number;
+}
+
+/**
+ * Compute the most-used tags across a post list, sorted by frequency then
+ * alphabetically. The generic "AWS" tag is excluded because every post is
+ * AWS-related on these pages and a filter pill for it would be a no-op.
+ */
+export function topTags(posts: UnifiedPost[], limit = 12): TagCount[] {
+  const map = new Map<string, TagCount>();
+  for (const post of posts) {
+    for (const tag of post.tags) {
+      const key = tag.trim().toLowerCase();
+      if (!key || key === 'aws') continue;
+      const existing = map.get(key);
+      if (existing) existing.count += 1;
+      else map.set(key, { name: tag.trim(), key, count: 1 });
+    }
+  }
+  return Array.from(map.values())
+    .sort((a, b) => b.count - a.count || a.name.localeCompare(b.name))
+    .slice(0, limit);
 }
 
 /**
