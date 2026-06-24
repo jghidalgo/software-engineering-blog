@@ -29,6 +29,7 @@ export default function Header() {
   }, []);
 
   return (
+    <>
     <header
       className={`sticky top-0 z-50 transition-all duration-300 ${
         scrolled
@@ -125,8 +126,12 @@ export default function Header() {
           </div>
         </div>
       </nav>
+    </header>
 
-      {/* Mobile menu */}
+      {/* Mobile menu — rendered OUTSIDE the header so its `position: fixed`
+       *  isn't scoped by the header's `backdrop-filter` containing block.
+       *  Inside the header, fixed children resolved to the header's 64px
+       *  box and didn't appear until a scroll reflow. */}
       {mobileMenuOpen && (
         <div className="fixed inset-0 z-50 md:hidden">
           <div
@@ -190,7 +195,7 @@ export default function Header() {
           </div>
         </div>
       )}
-    </header>
+    </>
   );
 }
 

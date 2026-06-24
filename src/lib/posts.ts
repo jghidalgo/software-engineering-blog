@@ -238,6 +238,38 @@ export function topTags(posts: UnifiedPost[], limit = 12): TagCount[] {
 }
 
 /**
+ * Find posts related to `target` by tag overlap. Ranks by # of shared tags
+ * (highest first), breaks ties by recency. Returns at most `limit` posts.
+ * The generic "AWS" tag is ignored as a similarity signal because nearly
+ * everything has it on these pages and it would dominate the ranking.
+ */
+export function relatedPosts(
+  target: UnifiedPost,
+  pool: UnifiedPost[],
+  limit = 3,
+): UnifiedPost[] {
+  const targetTags = new Set(
+    target.tags
+      .map((t) => t.trim().toLowerCase())
+      .filter((t) => t && t !== 'aws'),
+  );
+  if (targetTags.size === 0) return [];
+
+  return pool
+    .filter((p) => p.slug !== target.slug && p.href !== target.href)
+    .map((p) => {
+      const shared = p.tags.filter((t) =>
+        targetTags.has(t.trim().toLowerCase()),
+      ).length;
+      return { post: p, score: shared };
+    })
+    .filter(({ score }) => score > 0)
+    .sort((a, b) => b.score - a.score || (a.post.date < b.post.date ? 1 : -1))
+    .slice(0, limit)
+    .map(({ post }) => post);
+}
+
+/**
  * Fetch a single AI-generated news post by slug. Returns null if not found or
  * not yet published, or if Airtable is unreachable.
  */

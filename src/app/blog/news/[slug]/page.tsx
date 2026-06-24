@@ -4,10 +4,15 @@ import type { Metadata } from 'next';
 import { format } from 'date-fns';
 import { ArrowLeftIcon, ArrowTopRightOnSquareIcon, CalendarIcon, ClockIcon } from '@heroicons/react/24/outline';
 import Badge from '@/components/ui/Badge';
+import BlogCard from '@/components/BlogCard';
 import MarkdownArticle from '@/components/MarkdownArticle';
 import Reveal from '@/components/Reveal';
-import { getNewsPostBySlug } from '@/lib/posts';
+import { getAllPosts, getNewsPostBySlug, relatedPosts } from '@/lib/posts';
 import { categoryFor, labelFor, type SourceCategory } from '@/lib/rss';
+
+const SITE_URL =
+  process.env.NEXT_PUBLIC_SITE_URL?.replace(/\/$/, '') ||
+  'https://www.awsmindset.com';
 
 interface ChipStyle {
   chipClass: string;
@@ -88,8 +93,68 @@ export default async function NewsArticlePage({ params }: RouteParams) {
   const sourceLabel = labelFor(post.source);
   const chip = chipFor(category, sourceLabel);
 
+  // Related posts — tag-overlap ranked, top 3, excludes the current article.
+  // Loaded alongside the article so it's a single sweep through Airtable.
+  const allPosts = await getAllPosts();
+  const targetForRelated = {
+    slug: post.slug,
+    title: post.title,
+    excerpt: post.excerpt,
+    content: post.body,
+    date: post.publishedAt || post.createdAt || '',
+    author: 'AWS News Bot',
+    tags: post.tags,
+    readTime: post.readTime,
+    href: post.href,
+    source: post.source,
+  };
+  const related = relatedPosts(targetForRelated, allPosts, 3);
+
+  // JSON-LD Article schema — fed to Google for rich-snippet eligibility.
+  // `isBasedOn` keeps the original source visible to crawlers so they
+  // understand this is editorial commentary, not a direct republish.
+  const articleUrl = `${SITE_URL}${post.href}`;
+  const ogImageUrl = `${articleUrl}/opengraph-image`;
+  const jsonLd = {
+    '@context': 'https://schema.org',
+    '@type': 'Article',
+    headline: post.title,
+    description: post.excerpt,
+    image: [ogImageUrl],
+    datePublished: post.publishedAt || post.createdAt || new Date().toISOString(),
+    dateModified: post.publishedAt || post.createdAt || new Date().toISOString(),
+    author: {
+      '@type': 'Organization',
+      name: 'AWSMindset',
+      url: SITE_URL,
+    },
+    publisher: {
+      '@type': 'Organization',
+      name: 'AWSMindset',
+      url: SITE_URL,
+      logo: {
+        '@type': 'ImageObject',
+        url: `${SITE_URL}/Logo.png`,
+      },
+    },
+    mainEntityOfPage: {
+      '@type': 'WebPage',
+      '@id': articleUrl,
+    },
+    keywords: post.tags.join(', '),
+    articleSection: category,
+    ...(post.sourceUrl ? { isBasedOn: post.sourceUrl } : {}),
+  };
+
   return (
     <div className="relative overflow-hidden">
+      {/* schema.org Article — gives Google enough context to show this as a
+       *  rich result and credits the original source via isBasedOn. */}
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+      />
+
       {/* Decorative backdrop */}
       <div className="pointer-events-none absolute inset-x-0 top-0 -z-10 h-[420px] bg-gradient-to-b from-aws-smile/10 via-primary-500/5 to-transparent dark:from-aws-smile/[0.08]" />
       <div className="pointer-events-none absolute inset-0 -z-20 bg-grid" />
@@ -199,6 +264,38 @@ export default async function NewsArticlePage({ params }: RouteParams) {
           </Reveal>
         )}
       </article>
+
+      {/* Related posts — escapes the article's max-w-3xl so the cards get
+       *  the same width treatment as the listing grids. */}
+      {related.length > 0 && (
+        <section className="mx-auto max-w-7xl px-6 pb-20 lg:px-8">
+          <Reveal delay={240} className="border-t border-secondary-200/70 dark:border-white/10 pt-12">
+            <div className="mx-auto mb-10 max-w-3xl">
+              <p className="text-xs font-semibold uppercase tracking-[0.16em] text-secondary-500 dark:text-secondary-400">
+                Keep reading
+              </p>
+              <h2 className="mt-1 text-2xl font-bold text-secondary-900 dark:text-white sm:text-3xl">
+                Related articles
+              </h2>
+              <p className="mt-2 text-sm text-secondary-600 dark:text-secondary-300">
+                Picked by tag overlap — same services and topics, different angles.
+              </p>
+            </div>
+
+            <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
+              {related.map((p, i) => (
+                <Reveal
+                  key={p.slug}
+                  delay={Math.min(i * 80, 240)}
+                  className="h-full"
+                >
+                  <BlogCard post={p} href={p.href} />
+                </Reveal>
+              ))}
+            </div>
+          </Reveal>
+        </section>
+      )}
     </div>
   );
 }

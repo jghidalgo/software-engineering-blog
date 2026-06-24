@@ -34,6 +34,9 @@ export const metadata: Metadata = {
   creator: "AWSMindset",
   publisher: "AWSMindset",
   robots: { index: true, follow: true },
+  verification: {
+    google: 'VsDVj3AbH_J5qi-suq-hcpQfp-7pFFdiCXDhQWoowGQ',
+  },
   alternates: {
     canonical: SITE_URL,
     types: {
