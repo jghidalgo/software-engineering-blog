@@ -1,17 +1,26 @@
 import Link from 'next/link';
 import Image from 'next/image';
+import { ArrowTopRightOnSquareIcon, RssIcon } from '@heroicons/react/24/outline';
 
 interface IconProps {
   className?: string;
 }
 
+const CURRENT_YEAR = new Date().getFullYear();
+
 const navigation = {
-  main: [
-    { name: 'Home', href: '/' },
-    { name: 'Blog', href: '/blog' },
-    { name: 'AWS', href: '/aws' },
-    { name: 'About', href: '/about' },
-    { name: 'Contact', href: '/contact' },
+  explore: [
+    { name: 'Home',        href: '/' },
+    { name: 'Blog',        href: '/blog' },
+    { name: 'AWS',         href: '/aws' },
+    { name: 'Engineering', href: '/engineering' },
+    { name: 'Series',      href: '/series' },
+  ],
+  resources: [
+    { name: 'About',     href: '/about', external: false },
+    { name: 'Contact',   href: '/contact', external: false },
+    { name: 'RSS feed',  href: '/feed.xml', external: false, icon: RssIcon },
+    { name: 'Sitemap',   href: '/sitemap.xml', external: false },
   ],
   social: [
     {
@@ -54,33 +63,26 @@ const navigation = {
         </svg>
       ),
     },
-    {
-      name: 'Blog',
-      href: 'https://awsmindset.com/',
-      icon: (props: IconProps) => (
-        <svg fill="currentColor" viewBox="0 0 24 24" {...props}>
-          <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"/>
-        </svg>
-      ),
-    },
   ],
 };
 
 export default function Footer() {
   return (
     <footer className="relative isolate overflow-hidden border-t border-white/5 bg-gradient-to-b from-[#0b1220] to-[#060a14] text-secondary-300">
-      <div className="absolute inset-x-0 top-0 -z-10 h-px bg-gradient-to-r from-transparent via-primary-500/60 to-transparent" />
+      {/* Top hairline accent — gradient line marks the section transition */}
+      <div className="pointer-events-none absolute inset-x-0 top-0 -z-10 h-px bg-gradient-to-r from-transparent via-primary-500/60 to-transparent" />
+      {/* Ambient corner glows */}
       <div className="pointer-events-none absolute -top-32 left-1/2 -z-10 h-72 w-[600px] -translate-x-1/2 rounded-full bg-primary-500/10 blur-3xl" />
-      <div className="pointer-events-none absolute -bottom-32 right-10 -z-10 h-72 w-[420px] rounded-full bg-aws-smile/10 blur-3xl" />
+      <div className="pointer-events-none absolute -bottom-40 right-10 -z-10 h-80 w-[420px] rounded-full bg-aws-smile/10 blur-3xl" />
 
       <div className="mx-auto max-w-7xl px-6 py-16 sm:py-20 lg:px-8">
         <div className="grid gap-10 md:grid-cols-12">
           {/* Brand */}
           <div className="md:col-span-5">
-            <Link href="/" className="group inline-flex items-center gap-2.5">
+            <Link href="/" className="group inline-flex items-center gap-2.5" aria-label="AWSMindset — home">
               <Image
                 src="/Logo.png"
-                alt="AWSMindset"
+                alt=""
                 width={48}
                 height={48}
                 className="h-10 w-10 object-contain transition-transform duration-300 group-hover:rotate-3 group-hover:scale-105"
@@ -90,11 +92,11 @@ export default function Footer() {
               </span>
             </Link>
             <p className="mt-4 max-w-sm text-sm leading-relaxed text-secondary-400">
-              A personal field journal on Amazon Web Services fresh launches, real-world
-              architectures, and the engineering trade-offs behind them.
+              A personal field journal on Amazon Web Services — fresh service launches,
+              real-world architectures, and the engineering trade-offs behind them.
             </p>
 
-            <div className="mt-6 flex items-center gap-3">
+            <div className="mt-6 flex items-center gap-2">
               {navigation.social.map((item) => (
                 <a
                   key={item.name}
@@ -103,6 +105,7 @@ export default function Footer() {
                   rel="noopener noreferrer"
                   className="group inline-flex h-9 w-9 items-center justify-center rounded-full border border-white/10 bg-white/[0.03] text-secondary-400 hover:text-white hover:bg-white/[0.08] hover:border-white/20 transition-all duration-200"
                   aria-label={item.name}
+                  title={item.name}
                 >
                   <item.icon className="h-4 w-4" />
                 </a>
@@ -110,13 +113,13 @@ export default function Footer() {
             </div>
           </div>
 
-          {/* Links */}
-          <div className="md:col-span-3">
+          {/* Explore */}
+          <nav className="md:col-span-3" aria-label="Explore">
             <h3 className="text-xs font-semibold uppercase tracking-[0.18em] text-secondary-400">
               Explore
             </h3>
             <ul className="mt-4 space-y-2.5">
-              {navigation.main.map((item) => (
+              {navigation.explore.map((item) => (
                 <li key={item.name}>
                   <Link
                     href={item.href}
@@ -127,32 +130,74 @@ export default function Footer() {
                 </li>
               ))}
             </ul>
-          </div>
+          </nav>
 
-          {/* Region / build chip */}
-          <div className="md:col-span-4">
+          {/* Resources */}
+          <nav className="md:col-span-2" aria-label="Resources">
+            <h3 className="text-xs font-semibold uppercase tracking-[0.18em] text-secondary-400">
+              Resources
+            </h3>
+            <ul className="mt-4 space-y-2.5">
+              {navigation.resources.map((item) => {
+                const Icon = 'icon' in item ? item.icon : null;
+                return (
+                  <li key={item.name}>
+                    <Link
+                      href={item.href}
+                      className="inline-flex items-center gap-1.5 text-sm text-secondary-300 hover:text-white transition-colors duration-200"
+                    >
+                      {Icon && <Icon className="h-3.5 w-3.5" />}
+                      {item.name}
+                    </Link>
+                  </li>
+                );
+              })}
+            </ul>
+          </nav>
+
+          {/* Status + meta */}
+          <div className="md:col-span-2">
             <h3 className="text-xs font-semibold uppercase tracking-[0.18em] text-secondary-400">
               Status
             </h3>
-            <div className="mt-4 inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/[0.03] px-3 py-1.5 text-xs text-secondary-300">
+            <div className="mt-4 inline-flex items-center gap-2 rounded-full border border-emerald-400/30 bg-emerald-400/10 px-3 py-1.5 text-xs text-emerald-300">
               <span className="relative flex h-2 w-2">
                 <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-emerald-400/70" />
                 <span className="relative inline-flex h-2 w-2 rounded-full bg-emerald-400" />
               </span>
-              All systems operational
+              Operational
             </div>
-            <p className="mt-4 text-xs text-secondary-500">
-              Built with Next.js, Tailwind CSS &amp; a healthy dose of <span className="text-aws-smile">AWS</span>.
-            </p>
+            <a
+              href="https://github.com/jghidalgo"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="mt-4 inline-flex items-center gap-1 text-xs text-secondary-400 hover:text-white transition-colors"
+            >
+              View source
+              <ArrowTopRightOnSquareIcon className="h-3 w-3" />
+            </a>
           </div>
         </div>
 
-        <div className="mt-12 flex flex-col items-center justify-between gap-3 border-t border-white/5 pt-6 sm:flex-row">
+        {/* Bottom row */}
+        <div className="mt-14 flex flex-col items-start justify-between gap-3 border-t border-white/5 pt-6 sm:flex-row sm:items-center">
           <p className="text-xs text-secondary-500">
-            &copy; 2025 AWSMindset. All rights reserved.
+            &copy; {CURRENT_YEAR} <span className="font-medium text-secondary-400">AWSMindset</span>. All rights reserved.
           </p>
           <p className="text-xs text-secondary-500">
-            Crafted by Joan Rodríguez · <span className="font-mono text-secondary-400">us-east-1</span>
+            Crafted by{' '}
+            <a
+              href="https://linkedin.com/in/joan-rodriguez-hidalgo-56a2a"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="font-medium text-secondary-400 hover:text-white transition-colors"
+            >
+              Joan Rodríguez
+            </a>
+            <span className="mx-2 text-secondary-700">·</span>
+            Built with Next.js &amp; Tailwind CSS
+            <span className="mx-2 text-secondary-700">·</span>
+            <span className="font-mono text-secondary-400">us-east-1</span>
           </p>
         </div>
       </div>
