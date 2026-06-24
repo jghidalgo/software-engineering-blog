@@ -1,6 +1,13 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { timingSafeEqual } from 'node:crypto';
-import { fetchAwsFeed, normalizeLink, RSS_SOURCE_KEYS, type RssSource } from '@/lib/rss';
+import {
+  fetchAwsFeed,
+  normalizeLink,
+  categoryFor,
+  labelFor,
+  RSS_SOURCE_KEYS,
+  type RssSource,
+} from '@/lib/rss';
 import { rewriteAwsAnnouncement, computeReadTime } from '@/lib/ai-rewrite';
 import { listExistingDedupKeys, insertDraft } from '@/lib/airtable-posts';
 import { slugify, uniqueSlug } from '@/lib/slugify';
@@ -113,7 +120,11 @@ async function processSource(
     const item = batch[i];
     try {
       if (i > 0) await sleep(INTER_CALL_DELAY_MS);
-      const rewritten = await rewriteAwsAnnouncement(item);
+      const rewritten = await rewriteAwsAnnouncement(item, {
+        source,
+        sourceLabel: labelFor(source),
+        category: categoryFor(source),
+      });
       const baseSlug = slugify(rewritten.suggestedSlug || rewritten.title);
       const slug = uniqueSlug(baseSlug || source, takenSlugs);
       takenSlugs.add(slug);
