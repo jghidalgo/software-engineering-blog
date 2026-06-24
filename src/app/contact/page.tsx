@@ -7,7 +7,7 @@ const contactInfo = [
   {
     name: 'Email',
     description: 'Get in touch via email',
-    contact: 'joanrodr@gmail.com',
+    contact: 'awsmindset@gmail.com',
     icon: EnvelopeIcon,
   },
   {

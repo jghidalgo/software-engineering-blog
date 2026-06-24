@@ -4,7 +4,7 @@ import { useEffect, useState } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
 import { usePathname } from 'next/navigation';
-import { Bars3Icon, XMarkIcon } from '@heroicons/react/24/outline';
+import { Bars3Icon, XMarkIcon, MagnifyingGlassIcon } from '@heroicons/react/24/outline';
 import { CloudIcon, BookOpenIcon, CodeBracketIcon, CpuChipIcon } from '@heroicons/react/24/solid';
 import ThemeToggle from './ThemeToggle';
 
@@ -83,6 +83,16 @@ export default function Header() {
 
           {/* Desktop right */}
           <div className="hidden md:flex items-center gap-2">
+            <button
+              type="button"
+              onClick={() => document.dispatchEvent(new Event('open-command-palette'))}
+              aria-label="Search"
+              className="inline-flex items-center gap-2 rounded-full border border-secondary-200/70 dark:border-white/10 bg-white/60 dark:bg-white/[0.04] px-3 py-1.5 text-xs text-secondary-500 dark:text-secondary-400 backdrop-blur hover:text-secondary-900 dark:hover:text-white hover:bg-secondary-100 dark:hover:bg-white/[0.08] transition-colors"
+            >
+              <MagnifyingGlassIcon className="h-3.5 w-3.5" />
+              <span>Search</span>
+              <kbd className="ml-1 rounded border border-secondary-200/70 dark:border-white/10 bg-secondary-50 dark:bg-white/[0.04] px-1 text-[10px] font-medium">⌘K</kbd>
+            </button>
             <ThemeToggle />
             <Link
               href="/contact"
@@ -95,6 +105,14 @@ export default function Header() {
 
           {/* Mobile menu button */}
           <div className="md:hidden flex items-center gap-2">
+            <button
+              type="button"
+              onClick={() => document.dispatchEvent(new Event('open-command-palette'))}
+              aria-label="Search"
+              className="inline-flex items-center justify-center rounded-lg p-2 text-secondary-700 dark:text-secondary-300 hover:bg-secondary-100 dark:hover:bg-white/5"
+            >
+              <MagnifyingGlassIcon className="h-5 w-5" />
+            </button>
             <ThemeToggle />
             <button
               type="button"
