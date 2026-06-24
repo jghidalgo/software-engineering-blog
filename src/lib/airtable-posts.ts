@@ -121,6 +121,32 @@ function mapRecord(r: Records<FieldSet>[number]): PostRecord {
   };
 }
 
+/**
+ * Counts posts by status in a single Airtable scan. Fetches only the
+ * `status` field so the payload stays tiny — used by /api/stats which
+ * surfaces draft/published totals on the architecture page.
+ */
+export async function getPostStats(): Promise<{
+  published: number;
+  drafts: number;
+}> {
+  const base = getBase();
+  if (!base) return { published: 0, drafts: 0 };
+  let published = 0;
+  let drafts = 0;
+  await base(TABLE)
+    .select({ fields: ['status'], pageSize: 100 })
+    .eachPage((records, next) => {
+      for (const r of records) {
+        const status = String(r.get('status') ?? '').trim().toLowerCase();
+        if (status === 'published') published += 1;
+        else if (status === 'draft') drafts += 1;
+      }
+      next();
+    });
+  return { published, drafts };
+}
+
 export async function listPublishedPosts(): Promise<PostRecord[]> {
   const base = getBase();
   if (!base) return [];
