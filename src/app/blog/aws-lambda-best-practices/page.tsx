@@ -1,8 +1,14 @@
 import Link from 'next/link';
 import { ArrowLeftIcon, CalendarIcon, ClockIcon } from '@heroicons/react/24/outline';
 import Badge from '@/components/ui/Badge';
+import SeriesWidget from '@/components/SeriesWidget';
+import { getSeriesContext } from '@/lib/posts';
 
-export default function BlogPost() {
+export default async function BlogPost() {
+  const seriesContext = await getSeriesContext(
+    'aws-lambda-best-practices',
+    'aws-lambda-mastery',
+  );
   return (
     <div className="bg-secondary-50 dark:bg-secondary-900 min-h-screen">
       {/* Header */}
@@ -43,6 +49,11 @@ export default function BlogPost() {
 
       {/* Content */}
       <article className="mx-auto max-w-4xl px-6 py-16 lg:px-8">
+        {seriesContext && (
+          <div className="mb-8">
+            <SeriesWidget context={seriesContext} />
+          </div>
+        )}
         <div className="bg-gradient-to-br from-primary-50 to-primary-100 dark:bg-gradient-to-br dark:from-primary-900/20 dark:to-primary-800/10 rounded-xl p-8 shadow-sm border border-primary-200 dark:border-primary-700/50">
           <div className="prose prose-lg dark:prose-invert max-w-none">
           <p className="text-xl text-secondary-700 dark:text-secondary-200 mb-8">

@@ -51,7 +51,8 @@ export default async function Image() {
           }}
         />
 
-        {/* Logo */}
+        {/* Logo — next/og's ImageResponse only supports raw <img>, not next/image */}
+        {/* eslint-disable-next-line @next/next/no-img-element */}
         <img src={logoSrc} width={220} height={220} alt="" />
 
         {/* Wordmark */}

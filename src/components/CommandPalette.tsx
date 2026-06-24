@@ -12,6 +12,7 @@ import {
   EnvelopeIcon,
   UserCircleIcon,
   DocumentTextIcon,
+  ListBulletIcon,
   SunIcon,
   MoonIcon,
   ComputerDesktopIcon,
@@ -35,6 +36,7 @@ const NAV_ITEMS = [
   { label: 'Engineering: At Scale', href: '/engineering?category=at-scale', Icon: CpuChipIcon },
   { label: 'Engineering: Web Platform', href: '/engineering?category=web-platform', Icon: CpuChipIcon },
   { label: 'Engineering: Industry', href: '/engineering?category=industry', Icon: CpuChipIcon },
+  { label: 'Series (reading paths)', href: '/series', Icon: ListBulletIcon },
   { label: 'About', href: '/about', Icon: UserCircleIcon },
   { label: 'Contact', href: '/contact', Icon: EnvelopeIcon },
 ];

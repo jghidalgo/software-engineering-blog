@@ -227,6 +227,12 @@ In the same base used for contact/newsletter, create one more table:
   - `sourceLinkNorm` — Single line text (fallback dedup key)
   - `publishedAt` — Date
   - `createdAt` — Created time (Airtable built-in)
+  - `series` — Single line text (optional) — kebab-case slug that groups
+    posts into an editorial series (e.g. `aws-lambda-mastery`). Posts with
+    the same `series` value show up together on `/series/<slug>` and get
+    an in-article "Part N of M" widget with prev/next links.
+  - `seriesOrder` — Number (optional) — 1-indexed position within the
+    series. Defaults to publication order if omitted.
 
 Reuse the same Personal Access Token — it already has `data.records:read` and
 `data.records:write` scope.
@@ -313,3 +319,84 @@ Wrong/missing token returns 401.
 - **Model**: Default is `gemini-2.5-flash` (fastest free option). Swap to
   `gemini-2.5-pro` in `ai-rewrite.ts` for higher quality at the cost of
   tighter free-tier limits.
+
+---
+
+## 📧 Newsletter delivery (Resend)
+
+The newsletter form has been collecting subscribers into Airtable; this
+section turns that list into an actual email digest. Trigger via
+`POST /api/admin/send-digest` whenever you want to mail recent posts.
+
+### 1. Sign up for Resend
+
+1. Go to [resend.com](https://resend.com) — sign up, no credit card required
+2. Free tier: **100 emails/day**, **3,000/month** — plenty for a personal blog
+3. **Verify a sending domain** under Domains → Add Domain. Without this,
+   you can only send from Resend's test sender (`onboarding@resend.dev`)
+   to the email on your Resend account.
+4. Create an API key under **API Keys** → copy it (starts with `re_...`)
+
+### 2. Environment variables
+
+Append to `.env.local` and Vercel → Settings → Environment Variables:
+
+```env
+# Resend — newsletter delivery
+RESEND_API_KEY=re_...
+
+# Sender shown in From header. Once your domain is verified:
+NEWSLETTER_FROM_EMAIL=AWSMindset <hi@awsmindset.com>
+
+# Optional — where replies land (e.g. your personal inbox)
+NEWSLETTER_REPLY_TO=joan.rodriguez@dealerat.com
+```
+
+If `NEWSLETTER_FROM_EMAIL` is unset, the route falls back to
+`AWSMindset <onboarding@resend.dev>` — useful for testing before your
+domain is verified, but only deliverable to your Resend account email.
+
+### 3. Trigger a send
+
+Same auth as the cron — uses `CRON_SECRET`:
+
+```bash
+curl -X POST -H "Authorization: Bearer $CRON_SECRET" \
+  https://www.awsmindset.com/api/admin/send-digest
+```
+
+Expected JSON response:
+
+```json
+{
+  "ok": true,
+  "sent": 12,
+  "failed": 0,
+  "errors": [],
+  "postsIncluded": 5,
+  "recipients": 12
+}
+```
+
+The digest includes the **5 most recent published posts** (any source) and
+sends one email per active subscriber — never bcc, never combined.
+
+### 4. Automating it
+
+Vercel Hobby allows one cron per day and you're already using it for
+`/api/cron/aws-news`. Options for the digest:
+
+- **Manual** (recommended for v1): bookmark the curl, hit it weekly
+- **Airtable Automation**: scheduled automation that calls the endpoint
+  via a "Run a script" or webhook step
+- **Vercel Pro** (\$20/mo): adds unlimited crons; register a second
+  `vercel.json` entry
+
+### 5. Unsubscribe (v1)
+
+The email footer asks recipients to reply with "unsubscribe" — you remove
+them from the Airtable `Newsletter Subscribers` table manually (or flip
+their `Status` field from `active` to anything else; the route filters by
+`{Status} = 'active'`).
+
+A self-service unsubscribe link with a signed token is a future addition.

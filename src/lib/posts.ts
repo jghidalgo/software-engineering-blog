@@ -19,9 +19,10 @@ export interface UnifiedPost extends BlogPost {
 
 /**
  * Single source of truth for hand-authored posts. Each entry has a matching
- * src/app/blog/<slug>/page.tsx file with the full article body.
+ * src/app/blog/<slug>/page.tsx file with the full article body. Exported so
+ * the per-route OG image files can look up metadata by slug.
  */
-const HARDCODED_POSTS: BlogPost[] = [
+export const HARDCODED_POSTS: BlogPost[] = [
   {
     slug: 'localstack-vs-code-integration',
     title: 'LocalStack VS Code Integration: Revolutionary Local AWS Development',
@@ -46,6 +47,8 @@ const HARDCODED_POSTS: BlogPost[] = [
     tags: ['AWS', 'Lambda', 'Serverless', 'Debugging', 'IDE', 'Development'],
     readTime: '6 min read',
     featured: true,
+    series: 'aws-lambda-mastery',
+    seriesOrder: 2,
   },
   {
     slug: 'aws-lambda-best-practices',
@@ -58,6 +61,8 @@ const HARDCODED_POSTS: BlogPost[] = [
     tags: ['AWS', 'Lambda', 'Serverless', 'Best Practices', 'Performance'],
     readTime: '8 min read',
     featured: true,
+    series: 'aws-lambda-mastery',
+    seriesOrder: 1,
   },
   {
     slug: 'aws-infrastructure-as-code',
@@ -144,6 +149,8 @@ function recordToPost(r: PostRecord): UnifiedPost {
     featured: false,
     href: `/blog/news/${r.slug}`,
     source: r.source,
+    series: r.series ?? undefined,
+    seriesOrder: r.seriesOrder ?? undefined,
   };
 }
 
@@ -235,6 +242,122 @@ export function topTags(posts: UnifiedPost[], limit = 12): TagCount[] {
   return Array.from(map.values())
     .sort((a, b) => b.count - a.count || a.name.localeCompare(b.name))
     .slice(0, limit);
+}
+
+/* ============================================================
+ * Series helpers
+ * ============================================================ */
+
+export interface SeriesContext {
+  slug: string;
+  title: string;
+  posts: UnifiedPost[];
+  /** Position of the current post within the series, 1-indexed. */
+  currentIndex: number;
+  previous: UnifiedPost | null;
+  next: UnifiedPost | null;
+}
+
+export interface SeriesSummary {
+  slug: string;
+  title: string;
+  count: number;
+  /** Sorted posts in series order; the first one is shown as the cover. */
+  posts: UnifiedPost[];
+}
+
+/** A few special-case words that should stay capitalized in a series title. */
+const SERIES_TITLE_PRESERVE: Record<string, string> = {
+  aws: 'AWS',
+  api: 'API',
+  ai: 'AI',
+  ml: 'ML',
+  cdk: 'CDK',
+  sdk: 'SDK',
+  s3: 'S3',
+  ec2: 'EC2',
+  rds: 'RDS',
+  iam: 'IAM',
+  vpc: 'VPC',
+  cli: 'CLI',
+  iac: 'IaC',
+  js: 'JavaScript',
+  ts: 'TypeScript',
+};
+
+export function titleizeSeries(slug: string): string {
+  return slug
+    .split('-')
+    .map((part) => {
+      const lower = part.toLowerCase();
+      if (SERIES_TITLE_PRESERVE[lower]) return SERIES_TITLE_PRESERVE[lower];
+      return lower.charAt(0).toUpperCase() + lower.slice(1);
+    })
+    .join(' ');
+}
+
+/**
+ * Return all distinct series across hardcoded + Airtable posts, with their
+ * ordered post list. Series ordering uses `seriesOrder` when set, falling
+ * back to publication date.
+ */
+export async function listSeries(): Promise<SeriesSummary[]> {
+  const all = await getAllPosts();
+  const map = new Map<string, UnifiedPost[]>();
+  for (const post of all) {
+    if (!post.series) continue;
+    const bucket = map.get(post.series) ?? [];
+    bucket.push(post);
+    map.set(post.series, bucket);
+  }
+  return Array.from(map.entries())
+    .map(([slug, posts]) => ({
+      slug,
+      title: titleizeSeries(slug),
+      count: posts.length,
+      posts: sortInSeries(posts),
+    }))
+    .sort((a, b) => a.title.localeCompare(b.title));
+}
+
+function sortInSeries(posts: UnifiedPost[]): UnifiedPost[] {
+  return [...posts].sort((a, b) => {
+    const ao = a.seriesOrder;
+    const bo = b.seriesOrder;
+    if (ao !== undefined && bo !== undefined) return ao - bo;
+    if (ao !== undefined) return -1;
+    if (bo !== undefined) return 1;
+    // Both unset — fall back to publication date (oldest first within series)
+    return a.date < b.date ? -1 : 1;
+  });
+}
+
+export async function getSeriesPosts(seriesSlug: string): Promise<UnifiedPost[]> {
+  const all = await getAllPosts();
+  return sortInSeries(all.filter((p) => p.series === seriesSlug));
+}
+
+/**
+ * Return series context for an article — used by the in-article widget to
+ * show "Part 2 of 4 in AWS Lambda Mastery" + prev/next links. Returns null
+ * for standalone posts.
+ */
+export async function getSeriesContext(
+  postSlug: string,
+  postSeries: string | undefined,
+): Promise<SeriesContext | null> {
+  if (!postSeries) return null;
+  const posts = await getSeriesPosts(postSeries);
+  const idx = posts.findIndex((p) => p.slug === postSlug);
+  if (idx === -1) return null;
+  return {
+    slug: postSeries,
+    title: titleizeSeries(postSeries),
+    posts,
+    currentIndex: idx + 1,
+    previous: idx > 0 ? posts[idx - 1] : null,
+    next: idx < posts.length - 1 ? posts[idx + 1] : null,
+  };
 }
 
 /**

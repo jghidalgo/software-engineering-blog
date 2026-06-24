@@ -19,6 +19,10 @@ export interface PostRecord {
   sourceLinkNorm: string;
   publishedAt: string | null;
   createdAt: string;
+  /** Optional series slug — groups posts into editorial collections. */
+  series: string | null;
+  /** 1-indexed position within the series. */
+  seriesOrder: number | null;
 }
 
 export interface DraftInsert {
@@ -86,6 +90,16 @@ function mapRecord(r: Records<FieldSet>[number]): PostRecord {
     ? (rawSource as RssSource)
     : 'whats-new';
 
+  // Series fields are optional — both blank means standalone post
+  const rawSeries = String(pick(f, 'series') ?? '').trim();
+  const rawSeriesOrder = pick(f, 'seriesOrder');
+  const seriesOrderNum =
+    typeof rawSeriesOrder === 'number'
+      ? rawSeriesOrder
+      : rawSeriesOrder
+        ? parseInt(String(rawSeriesOrder), 10)
+        : NaN;
+
   return {
     id: r.id,
     slug: String(pick(f, 'slug') ?? ''),
@@ -102,6 +116,8 @@ function mapRecord(r: Records<FieldSet>[number]): PostRecord {
     sourceLinkNorm: String(pick(f, 'sourceLinkNorm') ?? ''),
     publishedAt: pick(f, 'publishedAt') ? String(pick(f, 'publishedAt')) : null,
     createdAt: String(pick(f, 'createdAt') ?? ''),
+    series: rawSeries || null,
+    seriesOrder: Number.isFinite(seriesOrderNum) ? seriesOrderNum : null,
   };
 }
 

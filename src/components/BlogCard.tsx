@@ -36,6 +36,10 @@ export interface BlogPost {
   tags: string[];
   readTime: string;
   featured?: boolean;
+  /** Kebab-case series slug (e.g. "aws-lambda-mastery"). Omit for standalone posts. */
+  series?: string;
+  /** 1-indexed position within the series. Used for prev/next + the /series/[slug] order. */
+  seriesOrder?: number;
 }
 
 interface BlogCardProps {

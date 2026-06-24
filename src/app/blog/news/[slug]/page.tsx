@@ -7,7 +7,8 @@ import Badge from '@/components/ui/Badge';
 import BlogCard from '@/components/BlogCard';
 import MarkdownArticle from '@/components/MarkdownArticle';
 import Reveal from '@/components/Reveal';
-import { getAllPosts, getNewsPostBySlug, relatedPosts } from '@/lib/posts';
+import SeriesWidget from '@/components/SeriesWidget';
+import { getAllPosts, getNewsPostBySlug, getSeriesContext, relatedPosts } from '@/lib/posts';
 import { categoryFor, labelFor, type SourceCategory } from '@/lib/rss';
 
 const SITE_URL =
@@ -92,6 +93,13 @@ export default async function NewsArticlePage({ params }: RouteParams) {
   const category = categoryFor(post.source);
   const sourceLabel = labelFor(post.source);
   const chip = chipFor(category, sourceLabel);
+
+  // Series context — null if the post isn't part of any series.
+  // Drives the in-article "Part N of M" widget + prev/next neighbors.
+  const seriesContext = await getSeriesContext(
+    post.slug,
+    post.series ?? undefined,
+  );
 
   // Related posts — tag-overlap ranked, top 3, excludes the current article.
   // Loaded alongside the article so it's a single sweep through Airtable.
@@ -239,6 +247,14 @@ export default async function NewsArticlePage({ params }: RouteParams) {
             </div>
           )}
         </Reveal>
+
+        {/* Series context — shown before the body so readers know where
+         *  they are in a multi-part arc. Renders nothing if standalone. */}
+        {seriesContext && (
+          <Reveal delay={100}>
+            <SeriesWidget context={seriesContext} />
+          </Reveal>
+        )}
 
         <Reveal delay={120} className="mt-12">
           <MarkdownArticle body={post.body} />
