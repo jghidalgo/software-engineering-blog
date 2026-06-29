@@ -349,7 +349,7 @@ RESEND_API_KEY=re_...
 NEWSLETTER_FROM_EMAIL=AWSMindset <hi@awsmindset.com>
 
 # Optional — where replies land (e.g. your personal inbox)
-NEWSLETTER_REPLY_TO=joan.rodriguez@dealerat.com
+NEWSLETTER_REPLY_TO=awsmindset@gmail.com
 ```
 
 If `NEWSLETTER_FROM_EMAIL` is unset, the route falls back to

@@ -60,6 +60,7 @@ export const BOOKS: Book[] = [
     author: 'John Culkin & Mike Zazon',
     category: 'aws',
     level: 'intermediate',
+    coverUrl: 'https://m.media-amazon.com/images/I/81HwE7+ogfL._SL1500_.jpg',
     description:
       'Recipe-driven walkthrough of the workflows you actually hit in production — IAM cross-account, VPC peering, S3 replication, the lot. Great as a working reference, not a sit-down read.',
     bestFor: 'Engineers past their first AWS year who need a fast recipe reference.',
@@ -78,6 +79,7 @@ What is weaker: the data-services chapters are thinner than I would expect (Dyna
     author: 'Peter Sbarski',
     category: 'aws',
     level: 'intermediate',
+    coverUrl: 'https://m.media-amazon.com/images/I/71n5LQ24ivL._SL1500_.jpg',
     description:
       'The book that made Lambda click for me. Walks through event-driven patterns end to end — API Gateway, DynamoDB streams, Step Functions — without the marketing fluff.',
     bestFor: 'Anyone building their first production serverless system on Lambda.',
@@ -95,6 +97,7 @@ What is dated: a few console screenshots, some IAM examples that would not pass 
     title: 'Designing Data-Intensive Applications',
     author: 'Martin Kleppmann',
     category: 'system-design',
+    coverUrl: 'https://m.media-amazon.com/images/I/81EMzJIWjtL._SL1500_.jpg',
     level: 'advanced',
     description:
       'The single most important book on distributed systems for working engineers. Replication, partitioning, consistency, consensus — explained so the trade-offs stick. Re-read it every couple of years.',
@@ -115,6 +118,7 @@ It is thick. Plan two months of evenings. You will come out speaking the same vo
     title: 'Building Microservices, 2nd Edition',
     author: 'Sam Newman',
     category: 'system-design',
+    coverUrl: 'https://m.media-amazon.com/images/I/81fIWMyn6JL._SL1500_.jpg',
     level: 'intermediate',
     description:
       'Honest, current take on when microservices are worth it and when they make everything worse. The deployment + observability chapters alone justify the cost.',
@@ -135,6 +139,7 @@ The mental model — services own data, communicate over well-defined contracts,
     title: 'System Design Interview — Volume 1',
     author: 'Alex Xu',
     category: 'system-design',
+    coverUrl: 'https://m.media-amazon.com/images/I/51vZ6t5W4gL._SL1499_.jpg',
     level: 'beginner',
     description:
       'Interview-focused but doubles as a fast on-ramp to the design vocabulary — rate limiters, consistent hashing, key-value stores. Skim it before any senior interview.',
@@ -155,6 +160,7 @@ Where it is weaker: a few technology callouts have aged (the Kafka chapter is cl
     title: 'The Pragmatic Programmer, 20th Anniversary',
     author: 'David Thomas & Andrew Hunt',
     category: 'software-engineering',
+    coverUrl: 'https://m.media-amazon.com/images/I/911WvX7M98L._SL1500_.jpg',
     level: 'beginner',
     description:
       'The closest thing the field has to a code of conduct. The revised edition trimmed the dated parts; what is left is durable advice on craft, design, and career discipline.',
@@ -173,6 +179,7 @@ It is a fast read, three or four evenings. The value is not in any single tip bu
     title: 'Software Engineering at Google',
     author: 'Titus Winters, Tom Manshreck, Hyrum Wright',
     category: 'software-engineering',
+    coverUrl: 'https://m.media-amazon.com/images/I/81bSa9px6qL._SL1500_.jpg',
     level: 'advanced',
     description:
       'The closest you will get to a peek inside one engineering org without working there. Best chapters: code review, dependency management, large-scale changes.',
@@ -193,6 +200,7 @@ What is overhyped: the chapters on culture and process can read like PR if you a
     title: 'The Staff Engineer’s Path',
     author: 'Tanya Reilly',
     category: 'career',
+    coverUrl: 'https://m.media-amazon.com/images/I/813cTBVF1hL._SL1500_.jpg',
     level: 'intermediate',
     description:
       'The clearest map I have read of the staff+ engineering track — how to operate at scope, write the docs that move orgs, and stay technical past senior. Required reading once you stop wanting management.',
