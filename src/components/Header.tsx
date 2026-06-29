@@ -5,7 +5,7 @@ import Link from 'next/link';
 import Image from 'next/image';
 import { usePathname } from 'next/navigation';
 import { Bars3Icon, XMarkIcon, MagnifyingGlassIcon } from '@heroicons/react/24/outline';
-import { CloudIcon, BookOpenIcon, CodeBracketIcon, CpuChipIcon, BoltIcon } from '@heroicons/react/24/solid';
+import { CloudIcon, BookOpenIcon, CodeBracketIcon, CpuChipIcon, BoltIcon, BookmarkIcon } from '@heroicons/react/24/solid';
 import ThemeToggle from './ThemeToggle';
 
 const navigation = [
@@ -13,6 +13,7 @@ const navigation = [
   { name: 'Blog', href: '/blog', icon: CodeBracketIcon },
   { name: 'AWS', href: '/aws', icon: CloudIcon },
   { name: 'Engineering', href: '/engineering', icon: CpuChipIcon },
+  { name: 'Books', href: '/books', icon: BookmarkIcon },
   { name: 'Architecture', href: '/architecture', icon: BoltIcon },
   { name: 'About', href: '/about', icon: null },
 ];

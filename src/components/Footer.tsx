@@ -14,6 +14,7 @@ const navigation = {
     { name: 'Blog',        href: '/blog' },
     { name: 'AWS',         href: '/aws' },
     { name: 'Engineering', href: '/engineering' },
+    { name: 'Books',       href: '/books' },
     { name: 'Series',      href: '/series' },
   ],
   resources: [
