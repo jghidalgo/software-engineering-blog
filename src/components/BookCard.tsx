@@ -1,6 +1,5 @@
-import Link from 'next/link';
-import { ArrowRightIcon } from '@heroicons/react/24/outline';
-import { coverGradient, type Book } from '@/lib/books';
+import { ArrowTopRightOnSquareIcon } from '@heroicons/react/24/outline';
+import { affiliateUrl, coverGradient, type Book } from '@/lib/books';
 
 export const LEVEL_BADGE: Record<NonNullable<Book['level']>, string> = {
   beginner: 'bg-emerald-500/15 text-emerald-700 dark:text-emerald-300 border-emerald-400/30',
@@ -9,15 +8,20 @@ export const LEVEL_BADGE: Record<NonNullable<Book['level']>, string> = {
 };
 
 export default function BookCard({ book }: { readonly book: Book }) {
+  const href = affiliateUrl(book.asin);
   const gradient = coverGradient(book.asin);
 
   return (
-    <Link
-      href={`/books/${book.asin}`}
+    <a
+      href={href}
+      target="_blank"
+      // sponsored: tells Google this is an affiliate/paid link (preferred over nofollow).
+      // noopener noreferrer: standard hardening on external links.
+      rel="sponsored noopener noreferrer"
       className="group relative flex flex-col overflow-hidden rounded-2xl border border-secondary-200/70 dark:border-white/10 bg-white/70 dark:bg-white/[0.03] backdrop-blur-sm shadow-card transition-all duration-300 hover:-translate-y-1 hover:shadow-card-hover"
-      aria-label={`${book.title} by ${book.author} — read the review`}
+      aria-label={`${book.title} by ${book.author} — view on Amazon (affiliate link)`}
     >
-      {/* Cover */}
+      {/* Cover — real Amazon image if provided, otherwise a synthetic gradient cover */}
       <div className="relative aspect-[3/4] overflow-hidden" style={{ background: gradient }}>
         {book.coverUrl ? (
           // Plain <img> — cover hosts vary, no central allowlist.
@@ -26,7 +30,7 @@ export default function BookCard({ book }: { readonly book: Book }) {
             src={book.coverUrl}
             alt={`Cover of ${book.title}`}
             loading="lazy"
-            className="absolute inset-0 h-full w-full object-cover transition-transform duration-500 group-hover:scale-105"
+            className="absolute inset-0 h-full w-full object-contain p-6 transition-transform duration-500 group-hover:scale-105"
           />
         ) : (
           <div className="absolute inset-0 flex flex-col justify-between p-5 text-white">
@@ -65,11 +69,11 @@ export default function BookCard({ book }: { readonly book: Book }) {
             </span>
           )}
           <span className="ml-auto inline-flex items-center gap-1 text-xs font-semibold text-aws-smile transition-all group-hover:gap-1.5">
-            Read review
-            <ArrowRightIcon className="h-3 w-3" />
+            View on Amazon
+            <ArrowTopRightOnSquareIcon className="h-3 w-3" />
           </span>
         </div>
       </div>
-    </Link>
+    </a>
   );
 }
